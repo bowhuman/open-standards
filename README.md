@@ -18,6 +18,7 @@ bowhuman bleibt Maintainer dieser Standards und Referenz-Implementierung. Die Sp
 |---|---|---|---|
 | BHS-001 | Parcours Exchange Format | STABLE | [specs/BHS-001-parcours-format.md](specs/BHS-001-parcours-format.md) |
 | BHS-002 | Session Export Format | DRAFT | [specs/BHS-002-session-format.md](specs/BHS-002-session-format.md) |
+| BHS-003 | Venue & Club Metadata | DRAFT | [specs/BHS-003-venue-club-metadata.md](specs/BHS-003-venue-club-metadata.md) |
 
 **BHS** = Bowhuman Standard
 

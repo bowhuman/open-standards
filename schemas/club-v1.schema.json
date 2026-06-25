@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/club-v1.schema.json",
+  "title": "BHS-003 Club Profile v1",
+  "description": "Bowhuman Standard BHS-003: Bogensportverein",
+  "type": "object",
+  "required": ["__type", "__version", "id", "name", "address"],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-club" },
+    "__version": { "type": "integer", "const": 1 },
+    "id":        { "type": "string", "minLength": 1 },
+    "name":      { "type": "string", "minLength": 1 },
+    "short_name": { "type": ["string", "null"] },
+    "website":   { "type": ["string", "null"], "format": "uri" },
+    "email":     { "type": ["string", "null"], "format": "email" },
+    "phone":     { "type": ["string", "null"] },
+    "social":    { "oneOf": [{ "$ref": "#/definitions/Social" }, { "type": "null" }] },
+    "address":   { "$ref": "#/definitions/Address" },
+    "gps":       { "oneOf": [{ "$ref": "#/definitions/GpsPoint" }, { "type": "null" }] },
+    "associations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Verbandszugehörigkeit, z.B. ['DSB', 'DFBV']"
+    },
+    "training_times": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/TrainingTime" }
+    },
+    "membership": {
+      "oneOf": [{ "$ref": "#/definitions/Membership" }, { "type": "null" }]
+    },
+    "disciplines": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["3d", "field", "indoor", "outdoor", "flight"]
+      }
+    },
+    "youth_section": { "type": ["boolean", "null"] },
+    "venue_ids":     { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "definitions": {
+    "Address": {
+      "type": "object",
+      "required": ["city", "country"],
+      "properties": {
+        "street":  { "type": ["string", "null"] },
+        "zip":     { "type": ["string", "null"] },
+        "city":    { "type": "string", "minLength": 1 },
+        "region":  { "type": ["string", "null"] },
+        "country": { "type": "string", "minLength": 2, "maxLength": 2 }
+      }
+    },
+    "GpsPoint": {
+      "type": "object",
+      "required": ["lat", "lon"],
+      "properties": {
+        "lat":    { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon":    { "type": "number", "minimum": -180, "maximum": 180 },
+        "source": { "type": "string", "enum": ["gps", "exif", "walk", "manual", "merged"] }
+      }
+    },
+    "Social": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instagram": { "type": "string" },
+        "facebook":  { "type": "string" },
+        "youtube":   { "type": "string" },
+        "tiktok":    { "type": "string" }
+      }
+    },
+    "TrainingTime": {
+      "type": "object",
+      "required": ["day", "start", "end"],
+      "properties": {
+        "day": {
+          "type": "string",
+          "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        },
+        "start": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+        "end":   { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+        "note":  { "type": ["string", "null"] }
+      }
+    },
+    "Membership": {
+      "type": "object",
+      "properties": {
+        "fee_eur":       { "type": ["number", "null"], "minimum": 0 },
+        "fee_youth_eur": { "type": ["number", "null"], "minimum": 0 },
+        "fee_note":      { "type": ["string", "null"] },
+        "join_url":      { "type": ["string", "null"], "format": "uri" }
+      }
+    }
+  }
+}

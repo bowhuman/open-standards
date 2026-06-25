@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/venue-v1.schema.json",
+  "title": "BHS-003 Venue Profile v1",
+  "description": "Bowhuman Standard BHS-003: Parcours-Standort mit Betreiberprofil",
+  "type": "object",
+  "required": ["__type", "__version", "id", "name", "address"],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-venue" },
+    "__version": { "type": "integer", "const": 1 },
+    "id":        { "type": "string", "minLength": 1 },
+    "name":      { "type": "string", "minLength": 1 },
+    "short_name": { "type": ["string", "null"] },
+    "website":   { "type": ["string", "null"], "format": "uri" },
+    "email":     { "type": ["string", "null"], "format": "email" },
+    "phone":     { "type": ["string", "null"] },
+    "social":    { "oneOf": [{ "$ref": "#/definitions/Social" }, { "type": "null" }] },
+    "address":   { "$ref": "#/definitions/Address" },
+    "gps":       { "oneOf": [{ "$ref": "#/definitions/GpsPoint" }, { "type": "null" }] },
+    "opening_hours": {
+      "oneOf": [{ "$ref": "#/definitions/OpeningHours" }, { "type": "null" }]
+    },
+    "opening_hours_note": { "type": ["string", "null"] },
+    "pricing": {
+      "oneOf": [{ "$ref": "#/definitions/Pricing" }, { "type": "null" }]
+    },
+    "payment_methods": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["cash", "card", "paypal", "wero", "bank_transfer", "other"]
+      }
+    },
+    "allowed_equipment": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["recurve", "compound", "barebow", "longbow", "traditional", "crossbow"]
+      },
+      "description": "Leeres Array = alle Klassen erlaubt"
+    },
+    "equipment_note": { "type": ["string", "null"] },
+    "target_count":   { "type": ["integer", "null"], "minimum": 1 },
+    "terrain": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["forest", "field", "mixed", "indoor"] }
+    },
+    "difficulty": {
+      "type": ["string", "null"],
+      "enum": ["beginner", "intermediate", "advanced", null]
+    },
+    "facilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["parking", "toilets", "shelter", "restaurant", "camping", "changing_room", "equipment_rental"]
+      }
+    },
+    "registration_required": { "type": ["boolean", "null"] },
+    "registration_url":      { "type": ["string", "null"], "format": "uri" },
+    "membership_required":   { "type": ["boolean", "null"] },
+    "club_id":               { "type": ["string", "null"] },
+    "parcours_ids":          { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "language":   { "type": "array", "items": { "type": "string", "minLength": 2, "maxLength": 2 } }
+  },
+  "definitions": {
+    "Address": {
+      "type": "object",
+      "required": ["city", "country"],
+      "properties": {
+        "street":  { "type": ["string", "null"] },
+        "zip":     { "type": ["string", "null"] },
+        "city":    { "type": "string", "minLength": 1 },
+        "region":  { "type": ["string", "null"] },
+        "country": { "type": "string", "minLength": 2, "maxLength": 2 }
+      }
+    },
+    "GpsPoint": {
+      "type": "object",
+      "required": ["lat", "lon"],
+      "properties": {
+        "lat":      { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon":      { "type": "number", "minimum": -180, "maximum": 180 },
+        "accuracy": { "type": ["number", "null"] },
+        "alt":      { "type": ["number", "null"] },
+        "source":   { "type": "string", "enum": ["gps", "exif", "walk", "manual", "merged"] }
+      }
+    },
+    "Social": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instagram": { "type": "string" },
+        "facebook":  { "type": "string" },
+        "youtube":   { "type": "string" },
+        "tiktok":    { "type": "string" }
+      }
+    },
+    "DayHours": {
+      "type": "object",
+      "required": ["open", "close"],
+      "properties": {
+        "open":  { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+        "close": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["open", "close"],
+            "properties": {
+              "open":  { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+              "close": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" }
+            }
+          }
+        }
+      }
+    },
+    "OpeningHours": {
+      "type": "object",
+      "properties": {
+        "monday":    { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "tuesday":   { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "wednesday": { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "thursday":  { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "friday":    { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "saturday":  { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "sunday":    { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "seasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "from", "to", "hours"],
+            "properties": {
+              "name":  { "type": "string" },
+              "from":  { "type": "string", "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$" },
+              "to":    { "type": "string", "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$" },
+              "hours": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "Pricing": {
+      "type": "object",
+      "properties": {
+        "day_ticket_eur":    { "type": ["number", "null"], "minimum": 0 },
+        "season_ticket_eur": { "type": ["number", "null"], "minimum": 0 },
+        "youth_discount":    { "type": ["boolean", "null"] },
+        "note":              { "type": ["string", "null"] }
+      }
+    }
+  }
+}
