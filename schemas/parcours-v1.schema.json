@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/parcours-v1.schema.json",
+  "title": "BHS-001 Parcours Format v1",
+  "description": "Bowhuman Standard BHS-001: 3D-Bogensport Parcours-Austauschformat (littlejohn-parcours v1)",
+  "type": "object",
+  "required": ["__type", "__version", "name", "targets"],
+  "additionalProperties": true,
+  "properties": {
+    "__type": {
+      "type": "string",
+      "const": "littlejohn-parcours",
+      "description": "Format-Marker, konstant 'littlejohn-parcours'"
+    },
+    "__version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema-Version, aktuell 1"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Name des Parcours"
+    },
+    "location": {
+      "type": ["string", "null"],
+      "description": "Ortsangabe (Freitext), z.B. 'Tholey, Saarland'"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Erstellungszeitpunkt (ISO-8601)"
+    },
+    "gps": {
+      "oneOf": [
+        { "$ref": "#/definitions/GpsPoint" },
+        { "type": "null" }
+      ],
+      "description": "Treffpunkt / Startpunkt des Parcours"
+    },
+    "targets": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Target" },
+      "minItems": 1,
+      "description": "Ziele des Parcours, mindestens 1"
+    }
+  },
+  "definitions": {
+    "GpsPoint": {
+      "type": "object",
+      "required": ["lat", "lon"],
+      "additionalProperties": true,
+      "properties": {
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90,
+          "description": "Breitengrad (WGS-84, Dezimalgrad)"
+        },
+        "lon": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180,
+          "description": "Längengrad (WGS-84, Dezimalgrad)"
+        },
+        "accuracy": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Genauigkeitsradius in Metern"
+        },
+        "alt": {
+          "type": ["number", "null"],
+          "description": "Höhe über NN in Metern"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["gps", "exif", "walk", "manual", "merged"],
+          "description": "Herkunft des GPS-Punktes"
+        },
+        "timestamp": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Zeitpunkt der GPS-Messung (ISO-8601)"
+        }
+      }
+    },
+    "Target": {
+      "type": "object",
+      "required": ["number", "animal", "category"],
+      "additionalProperties": true,
+      "properties": {
+        "number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Ziel-Nummer, 1-basiert und eindeutig im Parcours"
+        },
+        "animal": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Primärtier-Bezeichnung (Freitext, z.B. 'Wildschwein')"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["xl", "large", "medium", "small"],
+          "description": "Zielgröße nach IFAA-Klassifikation"
+        },
+        "distance_m": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Schussdistanz in Metern (Blau-Pflock / Standardpflock)"
+        },
+        "angle_deg": {
+          "type": ["number", "null"],
+          "minimum": -90,
+          "maximum": 90,
+          "description": "Neigungswinkel in Grad (negativ = bergab, positiv = bergauf)"
+        },
+        "gps": {
+          "oneOf": [
+            { "$ref": "#/definitions/GpsPoint" },
+            { "type": "null" }
+          ],
+          "description": "GPS-Position des Ziels (Tier / Scheibe)"
+        },
+        "flocks": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Flock" },
+          "description": "Pflock-Konfiguration; leer wenn kein Mehrpflock-Setup"
+        },
+        "scene": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SceneAnimal" },
+          "description": "Weitere Tiere an dieser Station (Schütze wählt vor Ort)"
+        },
+        "photo": {
+          "type": ["string", "null"],
+          "description": "Einmess-Foto als Data-URL (data:image/jpeg;base64,…)"
+        },
+        "photoSource": {
+          "type": ["string", "null"],
+          "enum": ["camera", "gallery", null],
+          "description": "Quelle des Fotos"
+        },
+        "heading_deg": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 359,
+          "description": "Kompassrichtung zum Ziel beim Foto-Auslösen (0=Nord)"
+        },
+        "photo_captured_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Zeitpunkt des Foto-Auslösens (ISO-8601)"
+        },
+        "photo_gps": {
+          "oneOf": [
+            { "$ref": "#/definitions/GpsPoint" },
+            { "type": "null" }
+          ],
+          "description": "GPS-Snapshot beim Foto-Auslösen"
+        }
+      }
+    },
+    "Flock": {
+      "type": "object",
+      "required": ["color", "distance_m"],
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "type": "string",
+          "enum": ["red", "blue", "white"],
+          "description": "Pflock-Farbe: red=weit, blue=mittel (Standard), white=nah"
+        },
+        "distance_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Distanz in Metern ab diesem Pflock"
+        }
+      }
+    },
+    "SceneAnimal": {
+      "type": "object",
+      "required": ["animal", "category"],
+      "additionalProperties": false,
+      "properties": {
+        "animal": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Tier-Bezeichnung (Freitext)"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["xl", "large", "medium", "small"],
+          "description": "Zielgröße"
+        }
+      }
+    }
+  }
+}

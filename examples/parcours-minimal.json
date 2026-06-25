@@ -1,0 +1,29 @@
+{
+  "__type":    "littlejohn-parcours",
+  "__version": 1,
+  "name":      "Beispiel-Parcours",
+  "location":  "Musterort",
+  "targets": [
+    {
+      "number":     1,
+      "animal":     "Wildschwein",
+      "category":   "large",
+      "distance_m": 22,
+      "angle_deg":  -5
+    },
+    {
+      "number":     2,
+      "animal":     "Reh",
+      "category":   "medium",
+      "distance_m": 18,
+      "angle_deg":  0
+    },
+    {
+      "number":     3,
+      "animal":     "Hamster",
+      "category":   "small",
+      "distance_m": 9,
+      "angle_deg":  10
+    }
+  ]
+}

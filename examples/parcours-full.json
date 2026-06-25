@@ -1,0 +1,79 @@
+{
+  "__type":    "littlejohn-parcours",
+  "__version": 1,
+  "name":      "Schaumberg D.K.",
+  "location":  "Tholey, Saarland",
+  "created_at": "2026-05-24T08:28:34.970Z",
+  "gps": {
+    "lat":      49.4912,
+    "lon":      7.0348,
+    "accuracy": null,
+    "alt":      380,
+    "source":   "manual"
+  },
+  "targets": [
+    {
+      "number":     1,
+      "animal":     "Wildschwein",
+      "category":   "large",
+      "distance_m": 22,
+      "angle_deg":  -5,
+      "gps": {
+        "lat":       49.4911639,
+        "lon":       7.0348083,
+        "accuracy":  5,
+        "alt":       371,
+        "source":    "gps",
+        "timestamp": "2026-05-24T09:42:00.000Z"
+      },
+      "flocks": [
+        { "color": "red",   "distance_m": 41 },
+        { "color": "blue",  "distance_m": 32 },
+        { "color": "white", "distance_m": 23 }
+      ],
+      "scene": []
+    },
+    {
+      "number":     2,
+      "animal":     "Dinosaurier",
+      "category":   "xl",
+      "distance_m": 41,
+      "angle_deg":  -8,
+      "gps": {
+        "lat":      49.4914200,
+        "lon":      7.0351000,
+        "accuracy": 6,
+        "alt":      368,
+        "source":   "gps"
+      },
+      "flocks": [
+        { "color": "red",   "distance_m": 55 },
+        { "color": "blue",  "distance_m": 41 },
+        { "color": "white", "distance_m": 27 }
+      ],
+      "scene": []
+    },
+    {
+      "number":     15,
+      "animal":     "Flamingo",
+      "category":   "medium",
+      "distance_m": 23,
+      "angle_deg":  -3,
+      "gps": {
+        "lat":      49.4918417,
+        "lon":      7.0319500,
+        "accuracy": 4,
+        "alt":      372,
+        "source":   "gps"
+      },
+      "flocks": [
+        { "color": "red",   "distance_m": 32 },
+        { "color": "blue",  "distance_m": 23 },
+        { "color": "white", "distance_m": 14 }
+      ],
+      "scene": [
+        { "animal": "Pelikan", "category": "large" }
+      ]
+    }
+  ]
+}

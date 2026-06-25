@@ -1,0 +1,119 @@
+{
+  "__type":    "hawkeye-session",
+  "__version": 1,
+  "id":        "3e34170d-0292-4b37-ac83-ff61f6008081",
+  "started_at": "2026-06-25T08:15:00.000Z",
+  "ended_at":  "2026-06-25T12:33:10.000Z",
+  "systemId":  "IFAA_3",
+  "archers": [
+    {
+      "id":    "00000000-0000-0000-431d-19da10da18d4",
+      "name":  "Felix Sauer",
+      "photo": null,
+      "equipment": {
+        "bow_type":        "Recurve",
+        "draw_weight_lbs": null
+      },
+      "custom_fields": [],
+      "isOwner":    true,
+      "created_at": "2026-06-25T08:15:00.000Z",
+      "updated_at": "2026-06-25T08:15:00.000Z"
+    }
+  ],
+  "parcours": {
+    "id":       "schaumberg-dk-2026",
+    "name":     "Schaumberg D.K.",
+    "location": "Tholey, Saarland",
+    "gps": {
+      "lat": 49.4912,
+      "lon": 7.0348
+    },
+    "targets": [
+      {
+        "number":     1,
+        "animal":     "Wildschwein",
+        "category":   "large",
+        "distance_m": 22,
+        "angle_deg":  -5,
+        "gps": {
+          "lat":      49.4911639,
+          "lon":      7.0348083,
+          "accuracy": 5,
+          "alt":      371,
+          "source":   "gps"
+        }
+      },
+      {
+        "number":     2,
+        "animal":     "Reh",
+        "category":   "medium",
+        "distance_m": 18,
+        "angle_deg":  0,
+        "gps": {
+          "lat":      49.4916889,
+          "lon":      7.0350361,
+          "accuracy": 5,
+          "alt":      304,
+          "source":   "gps"
+        }
+      }
+    ]
+  },
+  "shots": [
+    {
+      "id":            "bfaa80af-2eab-4a91-8fdd-8e73a57dbdd5",
+      "archer_id":     "00000000-0000-0000-431d-19da10da18d4",
+      "target_number": 1,
+      "arrow":         1,
+      "zone":          "kill",
+      "score":         20,
+      "timestamp":     "2026-06-25T08:21:19.000Z",
+      "angle_deg":     -5
+    },
+    {
+      "id":            "c12f3a01-9b44-4d2e-b871-3facce720184",
+      "archer_id":     "00000000-0000-0000-431d-19da10da18d4",
+      "target_number": 2,
+      "arrow":         1,
+      "zone":          "wound",
+      "score":         18,
+      "timestamp":     "2026-06-25T08:35:44.000Z",
+      "angle_deg":     0
+    },
+    {
+      "id":            "d89a4e57-1c33-4f11-a992-8b1234567890",
+      "archer_id":     "00000000-0000-0000-431d-19da10da18d4",
+      "target_number": 2,
+      "arrow":         2,
+      "zone":          "kill2",
+      "score":         16,
+      "timestamp":     "2026-06-25T08:36:02.000Z",
+      "angle_deg":     0
+    }
+  ],
+  "totals": [
+    {
+      "archer_id": "00000000-0000-0000-431d-19da10da18d4",
+      "total":     394,
+      "breakdown": {
+        "kills":  15,
+        "wounds": 14,
+        "misses":  5
+      }
+    }
+  ],
+  "total_score": 394,
+  "weather": {
+    "source":           "open-meteo",
+    "fetched_at":       "2026-06-25T08:15:00.000Z",
+    "temperature_c":    18,
+    "wind_speed_kmh":   12,
+    "wind_dir_deg":     225,
+    "wind_dir_label":   "SW",
+    "weather_code":     1,
+    "condition":        "Mainly clear",
+    "precipitation_mm": 0,
+    "visibility_m":     24000
+  },
+  "edits": []
+}
