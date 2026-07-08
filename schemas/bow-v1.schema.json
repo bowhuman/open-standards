@@ -4,7 +4,7 @@
   "title": "BHS-005 Bow v1",
   "description": "Bowhuman Standard BHS-005: ein einzelner Bogen (equipment_bows)",
   "type": "object",
-  "required": ["__type", "__version", "id", "label", "bow_type", "created_at"],
+  "required": ["__type", "__version", "id", "label", "bow_type", "equipment_class", "created_at"],
   "additionalProperties": true,
   "properties": {
     "__type":    { "type": "string", "const": "bhs-bow" },
@@ -14,6 +14,11 @@
     "bow_type": {
       "type": "string",
       "enum": ["Recurve", "Compound", "Blankbogen", "Langbogen", "Instinktiv", "Primitivbogen", "Armbrust"]
+    },
+    "equipment_class": {
+      "type": "string",
+      "description": "Kanonisches, abgeleitetes Cross-Standard-Vokabular (BHS-003, EquipmentClass). Verlustbehaftet gegenueber bow_type: Instinktiv und Primitivbogen werden beide zu traditional (BHS-005 Abschnitt 2.3).",
+      "enum": ["recurve", "compound", "barebow", "longbow", "traditional", "crossbow"]
     },
     "brand": { "type": ["string", "null"] },
     "draw_weight_lbs": { "type": ["number", "null"], "minimum": 0 },

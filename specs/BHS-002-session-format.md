@@ -8,7 +8,7 @@
 | Version | 0.9 |
 | Datum | 2026-06-25 |
 | Autor | bowhuman (Robin-Team) |
-| Abhängig von | BHS-001 (Parcours Format) |
+| Abhängig von | BHS-001 (Parcours Format) · BHS-005 (Equipment Metadata, §3 `equipment_set_snapshot`) |
 
 > **DRAFT**: Dieses Dokument beschreibt das implementierte Robin-Session-Format v1. Der Status DRAFT bedeutet, dass die Spec noch nicht formell verabschiedet ist und Details sich noch ändern können. Das Format selbst ist produktiv im Einsatz — Breaking Changes werden separat angekündigt.
 
@@ -94,10 +94,20 @@ interface Archer {
   id:           string;         // UUID v4
   name:         string;
   photo:        string | null;  // Data-URL, Avatar-Bild
+
+  /** @deprecated Reduzierter Legacy-Snapshot. Bleibt aus Kompatibilitätsgründen
+   *  erhalten (bestehende Robin-Exporte bleiben lesbar), wird aber durch
+   *  equipment_set_snapshot ersetzt, sobald verfügbar. Siehe equipment_set_snapshot. */
   equipment: {
     bow_type:         string | null;  // z.B. "Recurve", "Compound", "Barebow"
     draw_weight_lbs:  number | null;
   };
+
+  // Vollständiger Ausrüstungs-Snapshot, BHS-005-kompatibel (Entscheidung 2026-07-08).
+  // null, solange kein equipment_set beim Schützen konfiguriert war, oder in
+  // Exporten, die vor dieser Erweiterung erzeugt wurden (siehe equipment oben).
+  equipment_set_snapshot: EquipmentSetSnapshot | null;
+
   custom_fields: CustomField[];
   isOwner:      boolean;        // true = Session-Ersteller / Geräteinhaber
   created_at:   string;         // ISO-8601
@@ -109,6 +119,10 @@ interface CustomField {
   value: string;
 }
 ```
+
+`EquipmentSetSnapshot` entspricht strukturell BHS-005 §4.1 (`bhs-equipment-set`, ohne `__type`/`__version`) — mit eingebetteten `BowSnapshot`/`ArrowSnapshot` (BHS-005 §4.1/§2.3), inklusive `equipment_class`. Der Schütze weiß damit auch Jahre später noch, mit welchem konkreten Bogen und welchen Pfeilen er bei einer bestimmten Session geschossen hat — nicht nur den reduzierten `bow_type`/`draw_weight_lbs` aus dem Legacy-Feld.
+
+**Status:** Spec-Entscheidung getroffen (2026-07-08), **noch nicht implementiert** — Robin erzeugt `equipment_set_snapshot` aktuell noch nicht beim Session-Export (vgl. BHS-004 §8, dieselbe Lücke zwischen Spec und Produktivcode bei `IFAA_3`). Bis zur Umsetzung ist das Feld in echten Exporten `null`.
 
 ---
 
@@ -256,6 +270,7 @@ interface Edit {
         "bow_type":        "Recurve",
         "draw_weight_lbs": null
       },
+      "equipment_set_snapshot": null,
       "custom_fields": [],
       "isOwner":    true,
       "created_at": "2026-06-25T08:15:00.000Z",
@@ -316,6 +331,44 @@ interface Edit {
 
 ---
 
+## 9.1 `equipment_set_snapshot` (Beispiel, geplant)
+
+Sobald Robin diesen Wert füllt (siehe §3), sieht ein Eintrag so aus — identisch zum `bhs-equipment-set`-Beispiel in BHS-005 §4.2, nur ohne `__type`/`__version`:
+
+```json
+"equipment_set_snapshot": {
+  "id":        "c4d5e6f7-1a2b-4c3d-8e9f-0a1b2c3d4e5f",
+  "label":     "Turnier-Setup 2026",
+  "bow": {
+    "id":        "3f9a1b3e-2b7a-4c9e-9b0e-7a6c9d4e2f10",
+    "label":     "Hoyt Formula XI Turnier",
+    "bow_type":  "Recurve",
+    "equipment_class": "recurve",
+    "brand":     "Hoyt",
+    "draw_weight_lbs": 38,
+    "draw_length_in":  27.5,
+    "bow_length_in":   68,
+    "brace_height_in": 7.5,
+    "created_at": "2026-06-10T09:00:00.000Z"
+  },
+  "arrow": {
+    "id":        "8b2c4e1a-6f3d-4a2b-9c1e-5d7f8a9b0c11",
+    "label":     "Easton X10 400",
+    "model":     "X10",
+    "material":  "Carbon",
+    "spine":     400,
+    "length_in":       28.5,
+    "point_weight_gr": 100,
+    "total_weight_gr": 380,
+    "created_at": "2026-06-10T09:05:00.000Z"
+  },
+  "is_active": true,
+  "created_at": "2026-06-10T09:10:00.000Z"
+}
+```
+
+---
+
 ## 10. Offene Punkte für v1.0
 
 Diese Punkte müssen vor dem Status STABLE geklärt werden:
@@ -325,6 +378,8 @@ Diese Punkte müssen vor dem Status STABLE geklärt werden:
 - [ ] Verhalten bei Mehrschützen-Sessions (`total_score` vs. `totals[]`)
 - [ ] Geplante Erweiterungen: `shot_gps`, `peg_chosen`, `animal_chosen` (für v2)
 - [ ] Abgrenzung zum LittleJohn Session-Share (BHS-001 §4) — gleicher Dateimarker, andere Struktur
+- [ ] `equipment_set_snapshot` (§3, beschlossen 2026-07-08) in Robin implementieren — Spec ist fertig, Exporteur liefert das Feld noch nicht
+- [ ] Migrationspfad: Wann wird das deprecated `equipment`-Feld tatsächlich entfernt, falls überhaupt? Aktuell kein Zieldatum
 
 ---
 
@@ -334,3 +389,4 @@ Diese Punkte müssen vor dem Status STABLE geklärt werden:
 |---|---|---|
 | 0.9 | 2026-06-25 | Initialer DRAFT |
 | 0.9 | 2026-07-08 | §5.2 verweist auf BHS-004 (Scoring System Metadata) als Antwort auf die offene `systemId`-Frage |
+| 0.9 | 2026-07-08 | §3: `Archer.equipment_set_snapshot` ergänzt (BHS-005-kompatibel), altes `equipment` als deprecated Fallback markiert, nicht entfernt. Noch nicht in Robin implementiert (§10). |

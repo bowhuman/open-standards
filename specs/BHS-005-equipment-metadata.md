@@ -8,8 +8,7 @@
 | Version | 0.9 |
 | Datum | 2026-07-08 |
 | Autor | bowhuman |
-| Abhängig von | BHS-002 (Session Export Format, §3 `Archer.equipment`) |
-| Berührt | BHS-003 (§3.7 `EquipmentClass`) |
+| Abhängig von | BHS-002 (Session Export Format, §3 `Archer.equipment`) · BHS-003 (§3.7 `EquipmentClass`, referenziert von §2.3) |
 
 > **DRAFT**: Dieses Dokument beschreibt das implementierte Sherwood-Equipment-Modell (`equipment_bows`, `equipment_arrows`, `equipment_sets`). Der Status DRAFT bedeutet, dass die Spec noch nicht formell verabschiedet ist und Details sich noch ändern können. Das Modell selbst ist produktiv im Einsatz (Archers Nest → „Ausrüstung").
 
@@ -44,7 +43,7 @@ BHS-005 beschreibt **ausschließlich** die Stammdaten von Bogen, Pfeil und Set, 
 | Zubehör (Visier, Stabilisator, Auflage, Release) | Kein Feld in `equipment_bows` — nicht im Scope |
 | Mehrfach-Pfeilbestand / Stückzahl je Pfeilmodell | `equipment_arrows` bildet ein *Modell* ab, keine Stückzahl |
 | Wertungsklassen-Zuordnung (Bogentyp → Altersklasse) | `get_age_class_label()` in Sherwood, referenziert `bow_type` — siehe §5 |
-| Welches Set eine Session genutzt hat | BHS-002 (`Archer.equipment`, aktuell reduzierter Snapshot — siehe §6) |
+| Welches Set eine Session genutzt hat | BHS-002 (`Archer.equipment_set_snapshot`, beschlossen aber in Robin noch nicht implementiert — siehe §6) |
 | Erlaubte Bogenklassen an einem Venue | BHS-003 §3.7 `EquipmentClass` — eigenes, drittes Vokabular, siehe §5 |
 
 ---
@@ -61,6 +60,7 @@ interface Bow {
 
   label:      string;         // Anzeigename, z.B. "Hoyt Formula XI Turnier"
   bow_type:   BowType;
+  equipment_class: EquipmentClass;
   brand:      string | null;
 
   draw_weight_lbs:  number | null;  // Zuggewicht in lbs
@@ -85,9 +85,37 @@ type BowType =
   | "Armbrust";       // Crossbow
 ```
 
-Diese sieben Werte entsprechen exakt dem `CHECK`-Constraint von `equipment_bows.bow_type` in Sherwood (Stand 2026-07-08). Die Werte sind deutsch und großgeschrieben, weil das UI (`equipment.html`) sie so anzeigt — **nicht** identisch mit dem in BHS-003 §3.7 definierten `EquipmentClass`-Vokabular. Siehe §5.
+Diese sieben Werte entsprechen exakt dem `CHECK`-Constraint von `equipment_bows.bow_type` in Sherwood (Stand 2026-07-08). Die Werte sind deutsch und großgeschrieben, weil das UI (`equipment.html`) sie so anzeigt — **produktspezifisch**, volle Fidelity (7 Werte), Pflichtfeld. Für den standardübergreifenden Abgleich siehe §2.3.
 
-### 2.3 Vollständiges Beispiel
+### 2.3 EquipmentClass (kanonisch, abgeleitet)
+
+```typescript
+type EquipmentClass =
+  | "recurve"
+  | "compound"
+  | "barebow"
+  | "longbow"
+  | "traditional"  // fasst Instinktiv + Primitivbogen zusammen
+  | "crossbow";
+```
+
+**Entscheidung 2026-07-08:** `equipment_class` ist ein **zusätzliches, abgeleitetes** Pflichtfeld — kein Ersatz für `bow_type` (§2.2). Es übernimmt 1:1 das `EquipmentClass`-Vokabular aus BHS-003 §3.7 (dort jetzt als kanonisches Cross-Standard-Vokabular für Bogentypen deklariert) und macht `bhs-bow` direkt mit `Venue.allowed_equipment` (BHS-003 §1.1) vergleichbar, ohne dass Konsumenten selbst mappen müssen.
+
+Die Abbildung ist **verlustbehaftet**: `Instinktiv` und `Primitivbogen` fallen beide auf `traditional` (§5 dokumentiert das im Detail). Deshalb bleibt `bow_type` das primäre, volle Feld — `equipment_class` ist eine Convenience-Projektion für Filter-/Vergleichs-Use-Cases, keine Wahrheitsquelle.
+
+| `bow_type` | `equipment_class` |
+|---|---|
+| `Recurve` | `recurve` |
+| `Compound` | `compound` |
+| `Blankbogen` | `barebow` |
+| `Langbogen` | `longbow` |
+| `Instinktiv` | `traditional` |
+| `Primitivbogen` | `traditional` |
+| `Armbrust` | `crossbow` |
+
+**Implementierung:** Sherwood berechnet `equipment_class` beim API-Response aus `bow_type` (feste Lookup-Tabelle, s.o.) — **keine** DB-Migration von `equipment_bows` nötig, das Feld existiert nur auf Ebene dieses Austauschformats.
+
+### 2.4 Vollständiges Beispiel
 
 ```json
 {
@@ -96,6 +124,7 @@ Diese sieben Werte entsprechen exakt dem `CHECK`-Constraint von `equipment_bows.
   "id":        "3f9a1b3e-2b7a-4c9e-9b0e-7a6c9d4e2f10",
   "label":     "Hoyt Formula XI Turnier",
   "bow_type":  "Recurve",
+  "equipment_class": "recurve",
   "brand":     "Hoyt",
   "draw_weight_lbs": 38,
   "draw_length_in":  27.5,
@@ -181,7 +210,7 @@ interface EquipmentSet {
 }
 ```
 
-`BowSnapshot` / `ArrowSnapshot` entsprechen strukturell §2.1 / §3.1, jedoch **ohne** `__type`/`__version` — es handelt sich um eingebettete Kopien, kein eigenständiges Dokument. Das ist derselbe Ansatz wie beim Parcours-Snapshot in BHS-002 §4: ein Set ist zum Exportzeitpunkt in sich abgeschlossen und bleibt lesbar, auch wenn der referenzierte Bogen oder Pfeil später gelöscht wird (in der DB: `ON DELETE SET NULL` auf `bow_id`/`arrow_id` — das Set bleibt bestehen, verliert aber die Verknüpfung).
+`BowSnapshot` / `ArrowSnapshot` entsprechen strukturell §2.1 / §3.1 (inkl. `equipment_class`, §2.3), jedoch **ohne** `__type`/`__version` — es handelt sich um eingebettete Kopien, kein eigenständiges Dokument. Das ist derselbe Ansatz wie beim Parcours-Snapshot in BHS-002 §4: ein Set ist zum Exportzeitpunkt in sich abgeschlossen und bleibt lesbar, auch wenn der referenzierte Bogen oder Pfeil später gelöscht wird (in der DB: `ON DELETE SET NULL` auf `bow_id`/`arrow_id` — das Set bleibt bestehen, verliert aber die Verknüpfung).
 
 ### 4.2 Vollständiges Beispiel
 
@@ -195,6 +224,7 @@ interface EquipmentSet {
     "id":        "3f9a1b3e-2b7a-4c9e-9b0e-7a6c9d4e2f10",
     "label":     "Hoyt Formula XI Turnier",
     "bow_type":  "Recurve",
+    "equipment_class": "recurve",
     "brand":     "Hoyt",
     "draw_weight_lbs": 38,
     "draw_length_in":  27.5,
@@ -240,13 +270,15 @@ Drei Unterschiede im Detail:
 2. **Granularität:** BHS-003 fasst Instinctive und Primitive zu einem gemeinsamen `traditional` zusammen, `equipment_bows` und `age_classes` unterscheiden beide.
 3. **Vollständigkeit:** `age_classes.bow_category` hat keinen expliziten Wert für Armbrust/Crossbow — die Wettkampfklassen-Funktion behandelt Armbrust-Schützen wie Recurve-Schützen (laut Code-Kommentar bewusst so vorgesehen, nicht verifiziert gegen ein offizielles DSB-Reglement für Armbrust-Wettkampfklassen).
 
-**Diese Spec löst das nicht auf.** Wie schon in BHS-004 §8 (Robin-Scoring-Diskrepanz) gilt: Eine stillschweigende Vereinheitlichung würde die Diskrepanz verstecken statt sie zu beheben. Stattdessen macht §2.2 explizit, welches Vokabular `bhs-bow.bow_type` tatsächlich verwendet, und §8 hält die Entscheidung als offenen Punkt fest.
+**Entscheidung 2026-07-08:** Diese Spec löst die Diskrepanz nicht durch stillschweigende Vereinheitlichung auf (das würde sie nur verstecken, wie schon in BHS-004 §8 zur Robin-Scoring-Diskrepanz begründet), sondern durch ein **zweites, abgeleitetes Feld**: `equipment_class` (§2.3) übernimmt das BHS-003-Vokabular (jetzt kanonisch, s.o.) als Convenience-Projektion, `bow_type` (§2.2) bleibt das primäre, volle Feld. Keine Migration von `equipment_bows` nötig — Sherwood berechnet `equipment_class` beim Lesen.
+
+Ausdrücklich **nicht** durch diese Entscheidung gelöst: `age_classes.bow_category` bleibt ein drittes, unabhängiges Vokabular ohne Crossbow-Wert (dritte Zeile der Tabelle oben) — das ist eine Frage an das DSB-Regelwerk für Wettkampfklassen, keine, die dieses Austauschformat beantworten kann (siehe §8).
 
 ---
 
 ## 6. Bezug zu BHS-002
 
-`Archer.equipment` (BHS-002 §3) ist aktuell ein stark reduzierter Snapshot:
+`Archer.equipment` (BHS-002 §3) war bis 2026-07-08 ein stark reduzierter Snapshot:
 
 ```typescript
 equipment: {
@@ -255,7 +287,11 @@ equipment: {
 }
 ```
 
-Das deckt weder Pfeil-Daten noch die Set-Zuordnung ab. Naheliegende Erweiterung für eine künftige BHS-002-Version: `Archer.equipment` durch ein eingebettetes `bhs-equipment-set`-Snapshot (§4) ersetzen oder ergänzen — analog dazu, wie BHS-004 die bis dahin offene `systemId`-Frage aus BHS-002 §5.2 gelöst hat. Das ist hier bewusst nur als Vorschlag notiert (§8), keine verbindliche Änderung an BHS-002.
+Das deckte weder Pfeil-Daten noch die Set-Zuordnung ab.
+
+**Entscheidung 2026-07-08:** BHS-002 §3 bekommt ein neues Feld `equipment_set_snapshot: EquipmentSetSnapshot | null` — ein eingebettetes `bhs-equipment-set`-Snapshot (§4) ohne `__type`/`__version`, exakt nach dem Muster von `BowSnapshot`/`ArrowSnapshot` (§4.1). Das alte `equipment`-Feld bleibt **zusätzlich** als deprecated Fallback bestehen (nicht ersetzt) — dasselbe Prinzip wie der `aliases`-Mechanismus in BHS-004 §2.5: bestehende Robin-Exporte bleiben unverändert lesbar, neue Exporte liefern zusätzlich das vollständige Set. Details und das aktualisierte `Archer`-Interface: BHS-002 §3.
+
+Damit ist gelöst, was BHS-004 als Vorbild für dieses Vorgehen diente (dort: die offene `systemId`-Frage aus BHS-002 §5.2). **Noch offen:** Robin (der einzige Exporteur von BHS-002-Sessions) erzeugt `equipment_set_snapshot` aktuell noch nicht — die Spec-Änderung ist beschlossen, die Implementierung in `robin/js/` steht aus (vgl. BHS-004 §8, wo dieselbe Lücke zwischen Spec-Entscheidung und Produktivcode für `IFAA_3` dokumentiert ist).
 
 ---
 
@@ -271,11 +307,12 @@ bhs-equipment-set-<id>.json
 
 ## 8. Offene Punkte für v1.0
 
-- [ ] Entscheidung zur Vokabular-Kollision aus §5: Welches der drei Enums wird kanonisch? Vorschlag: BHS-003 `EquipmentClass` (bereits standardübergreifend gedacht) als kanonisches Cross-Standard-Vokabular, `bow_type` (§2.2) bleibt als produktspezifisches Feld mit `aliases`-Mechanismus (analog BHS-004 §2.5) bestehen.
-- [ ] Soll `age_classes.bow_category` einen explizitem Wert für Armbrust/Crossbow bekommen, oder ist "läuft implizit über Recurve-Klassen" ein bewusstes, verifiziertes DSB-Regelwerksverhalten? Braucht Rückfrage/Beleg, keine Spec-Frage.
+- [x] Entscheidung zur Vokabular-Kollision aus §5 (2026-07-08): `equipment_class` (§2.3) als zusätzliches, abgeleitetes Feld eingeführt — BHS-003 `EquipmentClass` ist kanonisch für Cross-Standard-Vergleiche, `bow_type` (§2.2) bleibt das primäre, volle Feld. Keine Migration von `equipment_bows` nötig.
+- [ ] Soll `age_classes.bow_category` einen expliziten Wert für Armbrust/Crossbow bekommen, oder ist "läuft implizit über Recurve-Klassen" ein bewusstes, verifiziertes DSB-Regelwerksverhalten? Braucht Rückfrage/Beleg, keine Spec-Frage — bewusst nicht durch die `equipment_class`-Entscheidung mitgelöst (§5).
 - [ ] Zubehör (Visier, Stabilisator, Auflage, Release, Sehne) — eigenes `bhs-accessory`-Profil für v2, oder Freitext-Feld an `bhs-bow`?
+- [ ] Komponentengewicht bei Pfeilen (Insert/Inlay, Befiederung/Nocke) — aktuell nur `point_weight_gr`/`total_weight_gr`. Für v2: optionales `components`-Objekt statt weiterer flacher Felder, falls Bedarf an detaillierterem Tuning-Tracking entsteht. Kein aktueller Produkt-Bedarf.
 - [ ] Stückzahl/Bestand je Pfeilmodell (`equipment_arrows` bildet aktuell ein Modell ab, keine Menge) — relevant für Inventar-Use-Cases, aktuell kein Produkt-Bedarf.
-- [ ] `Archer.equipment` in BHS-002 um ein vollständiges `bhs-equipment-set`-Snapshot erweitern (§6) — Produktentscheidung, kein reiner Spec-Fix.
+- [x] `Archer.equipment` in BHS-002 erweitern (2026-07-08): neues Feld `equipment_set_snapshot`, altes `equipment` bleibt als deprecated Fallback (§6, BHS-002 §3). Implementierung in Robin steht noch aus.
 - [ ] JSON Schema (§9) noch nicht extern reviewt.
 
 ---
@@ -303,3 +340,4 @@ bhs-equipment-set-<id>.json
 | Version | Datum | Änderungen |
 |---|---|---|
 | 0.9 | 2026-07-08 | Initialer DRAFT — Kernmodell aus `equipment_bows`/`equipment_arrows`/`equipment_sets` abgeleitet, Diskrepanz-Analyse zu drei Bogentyp-Vokabularen (§5) |
+| 0.9 | 2026-07-08 | `Bow.equipment_class` (§2.3) als abgeleitetes, kanonisches Feld eingeführt (BHS-003 `EquipmentClass`), Mapping-Tabelle ergänzt. BHS-002 `Archer.equipment_set_snapshot` beschlossen (§6), altes `equipment`-Feld bleibt als deprecated Fallback. Schemas und Beispiele entsprechend aktualisiert. |

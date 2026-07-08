@@ -4,6 +4,7 @@
   "id":        "3f9a1b3e-2b7a-4c9e-9b0e-7a6c9d4e2f10",
   "label":     "Hoyt Formula XI Turnier",
   "bow_type":  "Recurve",
+  "equipment_class": "recurve",
   "brand":     "Hoyt",
   "draw_weight_lbs": 38,
   "draw_length_in":  27.5,

@@ -20,7 +20,7 @@
     "BowSnapshot": {
       "type": "object",
       "description": "Strukturell identisch mit bow-v1.schema.json, aber ohne __type/__version — eingebettete Kopie zum Exportzeitpunkt (BHS-005 §4.1)",
-      "required": ["id", "label", "bow_type", "created_at"],
+      "required": ["id", "label", "bow_type", "equipment_class", "created_at"],
       "additionalProperties": true,
       "properties": {
         "id":    { "type": "string", "format": "uuid" },
@@ -28,6 +28,11 @@
         "bow_type": {
           "type": "string",
           "enum": ["Recurve", "Compound", "Blankbogen", "Langbogen", "Instinktiv", "Primitivbogen", "Armbrust"]
+        },
+        "equipment_class": {
+          "type": "string",
+          "description": "Kanonisches, abgeleitetes Cross-Standard-Vokabular (BHS-003, EquipmentClass). Siehe bow-v1.schema.json.",
+          "enum": ["recurve", "compound", "barebow", "longbow", "traditional", "crossbow"]
         },
         "brand": { "type": ["string", "null"] },
         "draw_weight_lbs": { "type": ["number", "null"], "minimum": 0 },

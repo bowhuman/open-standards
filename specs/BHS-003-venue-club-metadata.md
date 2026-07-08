@@ -370,6 +370,8 @@ type EquipmentClass =
 
 Leeres `allowed_equipment: []` bedeutet: **alle Klassen erlaubt**.
 
+**Kanonisches Cross-Standard-Vokabular (Entscheidung 2026-07-08):** `EquipmentClass` ist ab BHS-005 (Equipment Metadata) das kanonische, standardübergreifende Vokabular für Bogentypen — als abgeleitetes Feld `Bow.equipment_class` (BHS-005 §2.3), zusätzlich zum produktspezifischen `Bow.bow_type` (deutsch, aus Sherwood). Hintergrund und die vollständige Mapping-Tabelle: BHS-005 §2.3/§5.
+
 ### 3.8 TerrainType
 
 ```typescript
@@ -496,3 +498,4 @@ Beispiele:
 | 0.9 | 2026-06-25 | Initialer DRAFT |
 | 0.9 | 2026-07-08 | `OpeningHours`/`SeasonalHours`: `"closed"`-Sentinel eingeführt, `null` bedeutet jetzt "keine Angabe" statt "geschlossen" (§3.4) |
 | 0.9 | 2026-07-08 | `LocalizedString`-Typ eingeführt (§3.14), `opening_hours_note` darauf umgestellt. `name` bleibt String (Begründung in §3.14) |
+| 0.9 | 2026-07-08 | §3.7 `EquipmentClass`: zum kanonischen Cross-Standard-Bogentyp-Vokabular erklärt, referenziert von BHS-005 (`Bow.equipment_class`) |
