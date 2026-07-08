@@ -21,7 +21,9 @@
     "opening_hours": {
       "oneOf": [{ "$ref": "#/definitions/OpeningHours" }, { "type": "null" }]
     },
-    "opening_hours_note": { "type": ["string", "null"] },
+    "opening_hours_note": {
+      "oneOf": [{ "$ref": "#/definitions/LocalizedString" }, { "type": "null" }]
+    },
     "pricing": {
       "oneOf": [{ "$ref": "#/definitions/Pricing" }, { "type": "null" }]
     },
@@ -67,6 +69,13 @@
     "language":   { "type": "array", "items": { "type": "string", "minLength": 2, "maxLength": 2 } }
   },
   "definitions": {
+    "LocalizedString": {
+      "description": "Sprachcode (ISO 639-1) -> Text. Mindestens ein Eintrag erforderlich.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[a-z]{2}$" },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
     "Address": {
       "type": "object",
       "required": ["city", "country"],

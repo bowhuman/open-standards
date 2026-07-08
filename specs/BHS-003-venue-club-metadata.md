@@ -53,7 +53,7 @@ interface Venue {
 
   // Öffnungszeiten
   opening_hours:      OpeningHours | null;
-  opening_hours_note: string | null;   // z.B. "Nur mit Voranmeldung"
+  opening_hours_note: LocalizedString | null;   // z.B. { "de": "Nur mit Voranmeldung", "en": "By appointment only" }
 
   // Preise
   pricing: Pricing | null;
@@ -140,7 +140,7 @@ interface Venue {
       }
     ]
   },
-  "opening_hours_note": "Feiertage: geschlossen. Änderungen auf der Website.",
+  "opening_hours_note": { "de": "Feiertage: geschlossen. Änderungen auf der Website.", "en": "Closed on public holidays. Changes announced on the website." },
   "pricing": {
     "day_ticket_eur":    12.00,
     "season_ticket_eur": 80.00,
@@ -429,6 +429,22 @@ interface Membership {
 type Discipline = "3d" | "field" | "indoor" | "outdoor" | "flight";
 ```
 
+### 3.14 LocalizedString
+
+```typescript
+type LocalizedString = {
+  [languageCode: string]: string;  // ISO 639-1, z.B. "de", "en", "fr" — mindestens ein Eintrag erforderlich
+};
+```
+
+Ersetzt ab sofort feste `label_de`/`label_en`-Feldpaare (Entscheidung 2026-07-08, siehe §7 und BHS-004 §2.2). Konsumenten wählen die bevorzugte Sprache und fallen bei fehlendem Key auf einen beliebigen vorhandenen Key zurück (z.B. den ersten). Beispiel:
+
+```json
+{ "de": "Nur mit Voranmeldung", "en": "By appointment only" }
+```
+
+**Wo `LocalizedString` verwendet wird:** `Venue.opening_hours_note` (§1.1) und `BHS-004 Zone.label` (§2.2 dort). **Wo bewusst nicht:** `Venue.name` / `Club.name` bleiben einfache Strings — Vereins- und Betreibernamen sind Eigennamen und werden in aller Regel nicht übersetzt (z.B. bleibt "DK Bowfactory — Schaumberg" auch in einer französischsprachigen Ansicht unverändert). Sollte sich das als falsch herausstellen (z.B. amtliche zweisprachige Vereinsnamen in Grenzregionen), kann `name` in einer späteren Version zusätzlich auf `LocalizedString` umgestellt werden, ohne Bestandsdaten zu brechen (einfacher String ist kompatibel zu einem einzelnen `LocalizedString`-Eintrag).
+
 ---
 
 ## 4. Verknüpfungen zwischen den Profilen
@@ -465,7 +481,7 @@ Beispiele:
 
 ## 7. Offene Punkte für v1.0
 
-- [ ] Mehrsprachige Felder (`name`, `opening_hours_note`) — Struktur für i18n definieren
+- [x] Mehrsprachige Felder — **Entscheidung 2026-07-08:** generisches `LocalizedString`-Objekt eingeführt (§3.14), angewendet auf `opening_hours_note`. `name` bleibt bewusst einfacher String (Eigenname, siehe Begründung in §3.14).
 - [ ] Feiertags-Handling in `OpeningHours` (Feiertage nach Land/Region)
 - [ ] Bewertungen / Reviews — in BHS-003 oder eigenes Dokument?
 - [ ] Barrierefreiheit als eigenes Feld (`accessibility: ["wheelchair", "accessible_toilet"]`)
@@ -479,3 +495,4 @@ Beispiele:
 |---|---|---|
 | 0.9 | 2026-06-25 | Initialer DRAFT |
 | 0.9 | 2026-07-08 | `OpeningHours`/`SeasonalHours`: `"closed"`-Sentinel eingeführt, `null` bedeutet jetzt "keine Angabe" statt "geschlossen" (§3.4) |
+| 0.9 | 2026-07-08 | `LocalizedString`-Typ eingeführt (§3.14), `opening_hours_note` darauf umgestellt. `name` bleibt String (Begründung in §3.14) |

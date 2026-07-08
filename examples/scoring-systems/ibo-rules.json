@@ -1,0 +1,39 @@
+{
+  "__type":    "bhs-scoring-system",
+  "__version": 1,
+  "id":         "ibo-rules",
+  "name":       "IBO 3-D Shoot",
+  "short_name": "IBO",
+  "organization": "IBO",
+  "region":       ["US"],
+  "aliases": [],
+  "discipline":     "3d",
+  "distance_mode":  "unknown",
+  "zones": [
+    { "key": "eleven", "label": { "de": "Elf",  "en": "Eleven" }, "color": null },
+    { "key": "ten",    "label": { "de": "Zehn", "en": "Ten"    }, "color": null },
+    { "key": "eight",  "label": { "de": "Acht", "en": "Eight"  }, "color": null },
+    { "key": "five",   "label": { "de": "Fünf", "en": "Five"   }, "color": null }
+  ],
+  "arrows_per_target": 1,
+  "arrow_rule": "first_hit_stops",
+  "matrix": {
+    "1": { "eleven": 11, "ten": 10, "eight": 8, "five": 5 }
+  },
+  "miss_score": 0,
+  "max_score_per_target": 11,
+  "tie_break": null,
+  "status": "official",
+  "source": {
+    "document":     "IBO 3-D Shoot Rules (abbreviated) — Northern Virginia Archers, zitiert IBO-Regelwerk",
+    "url":          "https://norva.club/home/ibo-3-d-shoot-rules-abbreviated/",
+    "version":      null,
+    "retrieved_at": "2026-07-08T00:00:00.000Z",
+    "confidence":   "secondary"
+  },
+  "notes": "Auf Wunsch aufgenommen, obwohl aktuell kein bowhuman-Anwendungsfall besteht (siehe BHS-004 §9), analog zu ASA. Sekundärquelle (Vereinsseite), nicht direkt aus dem offiziellen IBO-Rules-PDF gelesen (Abruf per Direkt-Download ist wiederholt fehlgeschlagen/getimeoutet). Bemerkenswert: Die Quelle nennt die 8-Punkte-Zone ausdrücklich 'kill zone' — abweichend davon, dass in anderen 4-Zonen-Systemen (WA-3D, ASA) meist die höchste Zone als 'Kill' verstanden wird. Vor STABLE-Status gegen das offizielle IBO-Regelwerk verifizieren.",
+  "effective_from": null,
+  "superseded_by": null,
+  "created_at": "2026-07-08T00:00:00.000Z",
+  "updated_at": "2026-07-08T00:00:00.000Z"
+}

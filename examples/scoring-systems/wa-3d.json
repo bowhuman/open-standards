@@ -1,0 +1,97 @@
+{
+  "__type": "bhs-scoring-system",
+  "__version": 1,
+  "id": "wa-3d",
+  "name": "World Archery 3D",
+  "short_name": "WA 3D",
+  "organization": "WA",
+  "region": [
+    "INT"
+  ],
+  "aliases": [
+    {
+      "name": "WA_3D",
+      "source": "robin@2026-07-07 (js/scoring.js)",
+      "note": "Robin-interne ID nutzt aktuell 10/8 · 8/5 (2 Pfeile) — weicht von den offiziellen vier Zonen 11/10/8/5 ab, siehe BHS-004 §8."
+    }
+  ],
+  "discipline": "3d",
+  "distance_mode": "unknown",
+  "zones": [
+    {
+      "key": "spot",
+      "label": {
+        "de": "Spot (Innenzehn)",
+        "en": "Spot (inner ten)"
+      },
+      "color": null
+    },
+    {
+      "key": "vital_inner",
+      "label": {
+        "de": "Vital (innen)",
+        "en": "Vital (inner)"
+      },
+      "color": null
+    },
+    {
+      "key": "vital_outer",
+      "label": {
+        "de": "Vital (außen)",
+        "en": "Vital (outer)"
+      },
+      "color": null
+    },
+    {
+      "key": "body",
+      "label": {
+        "de": "Körper",
+        "en": "Body"
+      },
+      "color": null
+    }
+  ],
+  "arrows_per_target": 2,
+  "arrow_rule": "fixed_count_all_scored",
+  "matrix": {
+    "1": {
+      "spot": 11,
+      "vital_inner": 10,
+      "vital_outer": 8,
+      "body": 5
+    },
+    "2": {
+      "spot": 11,
+      "vital_inner": 10,
+      "vital_outer": 8,
+      "body": 5
+    }
+  },
+  "miss_score": 0,
+  "max_score_per_target": 22,
+  "tie_break": [
+    {
+      "criterion": "shoot_off",
+      "order": 1,
+      "note": "Einzelpfeil-Stechen (Book 4, Art. 22.3.2.1)"
+    },
+    {
+      "criterion": "closest_arrow",
+      "order": 2,
+      "note": "Bei erneutem Gleichstand entscheidet der Pfeil, der der Mitte am nächsten ist (Book 4, Art. 22.3.2.1)"
+    }
+  ],
+  "status": "official",
+  "source": {
+    "document": "World Archery Rulebook, Book 2 – Events, Art. 8.2.2.1 (Scoring zones) und Art. 4.5.2.1 (2 Pfeile/Ziel); Tie-Break aus Book 4 – Field and 3D Archery, Art. 22.3.2.1",
+    "url": "https://extranet.worldarchery.sport/documents/index.php/Rules/Rule_Book_versions/2026-01-27/EN-Book_2_-_2026-01-27_Version.pdf",
+    "version": "2026-01-27",
+    "retrieved_at": "2026-07-08T00:00:00.000Z",
+    "confidence": "verified"
+  },
+  "notes": "Wörtliches Zitat (Book 2, Art. 8.2.2.1): 'The target is divided into four scoring zones (11, 10, 8 and 5). [...] 11 points for the small circle in the centre of the 10-ring. 10 points for the larger circle within the vital area. Eight points for the vital area outside the 10-point circle. Five points for the remaining body colour zone.' Zonen-Keys (spot/vital_inner/vital_outer/body) sind bowhuman-eigene, sprechende Bezeichnungen — WA selbst benennt die Zonen nur über ihre Punktwerte. Dass beide Pfeile unabhängig von der Schussreihenfolge gleich gewertet werden (arrow_rule), ist zusätzlich durch eine Community-Sekundärquelle bestätigt (BEARS-Club, bears-club.de/turnierformen), nicht wörtlich im Rulebook-Text explizit. Ersetzt die ursprüngliche BHS-004-Draft-Annahme 'Pfeile/Ziel: 1–2 (klassenabhängig)', die falsch war.",
+  "effective_from": "2026-01-27",
+  "superseded_by": null,
+  "created_at": "2026-07-08T00:00:00.000Z",
+  "updated_at": "2026-07-08T00:00:00.000Z"
+}

@@ -1,40 +1,83 @@
 {
-  "__type":    "bhs-scoring-system",
+  "__type": "bhs-scoring-system",
   "__version": 1,
-  "id":         "dfbv-3pfeil-2024",
-  "name":       "Drei-Pfeil-Runde, unbekannte Entfernungen",
+  "id": "dfbv-3pfeil-2024",
+  "name": "Drei-Pfeil-Runde, unbekannte Entfernungen",
   "short_name": "DFBV 3-Pfeil",
   "organization": "DFBV",
-  "region":       ["DE"],
-  "aliases": [
-    { "name": "IFAA_3", "source": "robin@2026-07-07 (js/scoring.js)", "note": "Robin-interne ID nutzt aktuell abweichende Zahlen — siehe BHS-004 §8." }
+  "region": [
+    "DE"
   ],
-  "discipline":     "3d",
-  "distance_mode":  "unknown",
+  "aliases": [
+    {
+      "name": "IFAA_3",
+      "source": "robin@2026-07-07 (js/scoring.js)",
+      "note": "Robin-interne ID nutzt aktuell abweichende Zahlen — siehe BHS-004 §8."
+    }
+  ],
+  "discipline": "3d",
+  "distance_mode": "unknown",
   "zones": [
-    { "key": "kill",  "label_de": "Kill",  "label_en": "Kill",  "color": null },
-    { "key": "vital", "label_de": "Vital", "label_en": "Vital", "color": null },
-    { "key": "wound", "label_de": "Wund",  "label_en": "Wound", "color": null }
+    {
+      "key": "kill",
+      "label": {
+        "de": "Kill",
+        "en": "Kill"
+      },
+      "color": null
+    },
+    {
+      "key": "vital",
+      "label": {
+        "de": "Vital",
+        "en": "Vital"
+      },
+      "color": null
+    },
+    {
+      "key": "wound",
+      "label": {
+        "de": "Wund",
+        "en": "Wound"
+      },
+      "color": null
+    }
   ],
   "arrows_per_target": 3,
   "arrow_rule": "first_hit_stops",
   "matrix": {
-    "1": { "kill": 20, "vital": 18, "wound": 16 },
-    "2": { "kill": 14, "vital": 12, "wound": 10 },
-    "3": { "kill": 8,  "vital": 6,  "wound": 4  }
+    "1": {
+      "kill": 20,
+      "vital": 18,
+      "wound": 16
+    },
+    "2": {
+      "kill": 14,
+      "vital": 12,
+      "wound": 10
+    },
+    "3": {
+      "kill": 8,
+      "vital": 6,
+      "wound": 4
+    }
   },
   "miss_score": 0,
   "max_score_per_target": 20,
   "tie_break": [
-    { "criterion": "most_kills", "order": 1, "note": null }
+    {
+      "criterion": "most_kills",
+      "order": 1,
+      "note": null
+    }
   ],
   "status": "official",
   "source": {
-    "document":     "Sportordnung (SpO) DFBV, Fassung Januar 2024, Art. 6.7.8.3",
-    "url":          "https://www.dfbv.de/wp-content/uploads/2024/01/DFBV_SpO_2024.pdf",
-    "version":      "Januar 2024",
+    "document": "Sportordnung (SpO) DFBV, Fassung Januar 2024, Art. 6.7.8.3",
+    "url": "https://www.dfbv.de/wp-content/uploads/2024/01/DFBV_SpO_2024.pdf",
+    "version": "Januar 2024",
     "retrieved_at": "2026-07-08T00:00:00.000Z",
-    "confidence":   "verified"
+    "confidence": "verified"
   },
   "notes": "Direkt aus dem PDF-Regelwerk entnommene Tabelle (Art. 6.7.8.3). Drei Zonen, nicht zwei — Unterschied zur oft zitierten vereinfachten 'IFAA-Tabelle' mit nur Vital/Wound.",
   "effective_from": "2024-01-01",

@@ -96,14 +96,15 @@ interface ScoringSystem {
 
 ```typescript
 interface Zone {
-  key:      string;           // stabiler Bezeichner, z.B. "kill", "vital", "wound", "k11"
-  label_de: string;           // z.B. "Kill", "Vital", "Wund"
-  label_en: string;           // z.B. "Kill", "Vital", "Wound"
-  color:    string | null;    // Freitext/Hex, falls die Zone farblich markiert ist
+  key:   string;                // stabiler Bezeichner, z.B. "kill", "vital", "wound", "k11"
+  label: LocalizedString;       // z.B. { "de": "Kill", "en": "Kill" } — siehe BHS-003 §3.14
+  color: string | null;         // Freitext/Hex, falls die Zone farblich markiert ist
 }
 ```
 
 `zones[]` ist absichtlich **nicht** auf `kill`/`wound`/`miss` fixiert (das war die BHS-002-v0.9-Annahme). Systeme mit zwei Zonen (Skandinavisch), drei Zonen (DFBV Drei-Pfeil-Runde: Kill/Vital/Wound) und vier Zonen (WA-3D/IBO-Stil: 11/10/8/5) werden gleich behandelt.
+
+**i18n-Entscheidung (2026-07-08):** `label_de`/`label_en` wurden durch das generische `LocalizedString`-Objekt aus BHS-003 §3.14 ersetzt (dort auch die Begründung). Bestehende Registry-Beispiele wurden entsprechend migriert.
 
 ### 2.3 ArrowRule
 
@@ -187,6 +188,8 @@ interface TieBreakRule {
 }
 ```
 
+**Scoping-Klarstellung (2026-07-08):** `ScoringSystem.tie_break` bildet ausschließlich das **Standardverfahren des jeweiligen Verbands für seine eigenen offiziellen Wettkämpfe** ab (z.B. World Archerys Stechen-Regeln aus Book 4, Art. 22.3.2.1, oder DFBVs "meiste Kills"). Es ist **nicht bindend** für andere Turniere, die dasselbe Wertungssystem verwenden — ein Vereinsturnier mit der DFBV-Drei-Pfeil-Runde kann ein eigenes, abweichendes Stechen-Verfahren festlegen, ohne dass das ein Verstoß gegen dieses System wäre. Konzeptionell gehört Tie-Break eigentlich zur Turnierebene (mehrere Athleten, ein Wettkampfformat), nicht zur Zone×Pfeilposition-Übersetzung, die den Kern von BHS-004 ausmacht (§1). Das Feld bleibt hier aus pragmatischen Gründen erhalten, weil es bereits mit echten, quellenbelegten Daten befüllt ist (siehe `dfbv-3pfeil-2024.json`, `wa-3d.json`) — bei einem künftigen Tournament-Format-Dokument (Arbeitstitel BHS-006) sollte es fachlich dorthin wandern, mit Verweis von hier aus (analog zum `GpsPoint`-Muster zwischen BHS-001 und BHS-003).
+
 ---
 
 ## 3. Vollständiges Beispiel: DFBV Drei-Pfeil-Runde (2024)
@@ -206,9 +209,9 @@ interface TieBreakRule {
   "discipline":     "3d",
   "distance_mode":  "unknown",
   "zones": [
-    { "key": "kill",  "label_de": "Kill",  "label_en": "Kill",  "color": null },
-    { "key": "vital", "label_de": "Vital", "label_en": "Vital", "color": null },
-    { "key": "wound", "label_de": "Wund",  "label_en": "Wound", "color": null }
+    { "key": "kill",  "label": { "de": "Kill",  "en": "Kill"  }, "color": null },
+    { "key": "vital", "label": { "de": "Vital", "en": "Vital" }, "color": null },
+    { "key": "wound", "label": { "de": "Wund",  "en": "Wound" }, "color": null }
   ],
   "arrows_per_target": 3,
   "arrow_rule": "first_hit_stops",
@@ -257,9 +260,9 @@ Zeigt `arrow_rule: "fixed_count_all_scored"` — beide Pfeile zählen, keine Abw
   "discipline":     "3d",
   "distance_mode":  "unknown",
   "zones": [
-    { "key": "kill",  "label_de": "Kill",  "label_en": "Kill",  "color": null },
-    { "key": "vital", "label_de": "Vital", "label_en": "Vital", "color": null },
-    { "key": "wound", "label_de": "Wund",  "label_en": "Wound", "color": null }
+    { "key": "kill",  "label": { "de": "Kill",  "en": "Kill"  }, "color": null },
+    { "key": "vital", "label": { "de": "Vital", "en": "Vital" }, "color": null },
+    { "key": "wound", "label": { "de": "Wund",  "en": "Wound" }, "color": null }
   ],
   "arrows_per_target": 2,
   "arrow_rule": "fixed_count_all_scored",
@@ -336,12 +339,14 @@ Diese Tabelle fasst die während der Recherche gefundenen Systeme zusammen. Sie 
 |---|---|---|---|---|---|---|
 | Drei-Pfeil-Runde | DFBV | Kill/Vital/Wound | 3 | 20/18/16 · 14/12/10 · 8/6/4 | [DFBV SpO 2024, Art. 6.7.8](https://www.dfbv.de/wp-content/uploads/2024/01/DFBV_SpO_2024.pdf) | verified |
 | Doppelhunter-Runde | DFBV | Kill/Vital/Wound | 2 (beide gewertet) | 10/8/5 · 10/8/5 | [DFBV SpO 2024, Art. 6.7.10](https://www.dfbv.de/wp-content/uploads/2024/01/DFBV_SpO_2024.pdf) | verified |
-| Hunter-/Ein-Pfeil-Runde | DFBV | — | 1 | Tabelle im PDF als Grafik hinterlegt, nicht als Text extrahierbar | [DFBV SpO 2024, Art. 6.7.9](https://www.dfbv.de/wp-content/uploads/2024/01/DFBV_SpO_2024.pdf) | unverified — offen |
+| Hunter-/Ein-Pfeil-Runde | DFBV | Kill/Wund/Körper | 1 | 20/16/10 | Grafik-Tabelle im PDF von Peter Klein übermittelt: [DFBV SpO 2022, Art. 6.7.9.4](https://www.dfbv.de/wp-content/uploads/2022/07/DFBV-Sportordnung-2022-01.pdf) | secondary — deckt sich mit Community-Katalog (Variante J) |
+| Hunter-Runde (Community, nicht-DFBV-spezifisch) | — | Kill/Körper | 1 | 20/10 | [BEARS-Club — Turnierformen](https://bears-club.de/turnierformen/) | unverified — abweichende Zonenzahl, nicht übernommen |
+| Hunterwertung, diverse Varianten (Katalog, keinem Verband zugeordnet) | — | Spot/Kill/Körper | 1–3 | u.a. "20/16" (2 Zonen) oder "20/16/10" (3 Zonen, "Variante J" — deckt sich mit der DFBV-Zahl oben), siehe Quelle für vollständige Variantenliste A–K | [BogensportBlog — Wertungs-Varianten](https://bogensportblog.de/wertungs-varianten-beim-3d-bogenschiessen/) | unverified — Katalog ohne Verbandszuordnung, aber Corroboration |
 | IFAA Animal Round | IFAA | Vital/Non-Vital | 3 | 20/16/12 · 18/14/10 | [Northern Virginia Archers – Animal Round](https://norva.club/home/field-hunter-and-animal-rounds-abbreviated/) | secondary |
 | Skandinavische Wertung | — (Community-Konvention) | Kill/Körper | 3 | 20/16 · 14/10 · 8/4 | [bogensportwiki.info](http://www.bogensportwiki.info/index.php?title=Skandinavische_Wertung) | secondary |
 | ASA Pro/Am | ASA (US) | 12(×2)/10/8/5 | 1 (+ Shoot-off-Sonderfall) | 12 · 10 · 8 · 5 · 0 | [Elevation Equipped – ASA Scoring](https://elevationequipped.com/how-asa-3d-archery-scoring-works/) | secondary |
-| IBO | IBO (US) | 11/10/8/5 | 1 | 11 · 10 · 8 · 5 · 0 | [IBO Rules PDF](https://iboarchery.com/wp-content/uploads/IBO-Rules.pdf) | secondary |
-| WA 3D | World Archery | 11/10/8/5 | 1–2 (klassenabhängig) | 11 · 10 · 8 · 5 | World Archery Rulebook, Book 4 (Chapter 9) — Seite ist JS-basiert, Zahlen nur aus Sekundärquellen bestätigt | unverified — offen |
+| IBO | IBO (US) | 11/10/8/5 | 1 | 11 · 10 · 8 · 5 · 0 | [IBO 3-D Shoot Rules (abbreviated) — NORVA](https://norva.club/home/ibo-3-d-shoot-rules-abbreviated/) | secondary |
+| WA 3D | World Archery | 11/10/8/5 | 2 (beide gewertet, gleiche Wertigkeit unabhängig der Reihenfolge) | 11 · 10 · 8 · 5 | [World Archery Rulebook, Book 2 – Events, Version 2026-01-27, Art. 8.2.2.1](https://extranet.worldarchery.sport/documents/index.php/Rules/Rule_Book_versions/2026-01-27/EN-Book_2_-_2026-01-27_Version.pdf) | verified |
 
 **Wichtiger Befund:** Die IFAA-Animal-Round-Tabelle (20/16/12 Vital, 18/14/10 Non-Vital, **zwei** Zonen) und die DFBV-Drei-Pfeil-Runde (20/18/16, 14/12/10, 8/6/4, **drei** Zonen) werden umgangssprachlich oft synonym als "IFAA-Wertung" bezeichnet, sind aber unterschiedliche Systeme mit unterschiedlicher Zonenzahl. Das bestätigt den in §8 beschriebenen Bedarf an expliziten `aliases` und `source`-Angaben statt impliziter Namenskonventionen.
 
@@ -359,19 +364,20 @@ Beim Schreiben dieses Standards wurde die aktuell produktive Scoring-Engine in `
 
 Dies ist **keine Aufforderung**, den produktiven Code sofort zu ändern — Bestandsdaten in bereits exportierten BHS-002-Sessions bleiben mit den bisherigen Werten gültig. Es ist der konkrete Beleg, warum BHS-004 jedes System mit Pflichtfeld `source` und `aliases` ausstattet: So wird eine Diskrepanz wie diese zukünftig **sichtbar im Datenmodell** statt stillschweigend im Code zu leben.
 
-**Empfehlung für die Praxis** (siehe §9, offener Punkt): `robin/js/scoring.js` perspektivisch so umbauen, dass `SYSTEMS` aus der BHS-004-Registry (§5) generiert wird, mit `IFAA_3` als deklariertem Alias auf `dfbv-3pfeil-2024` **oder** als eigenständiges System `bowhuman-scandinavian-3arrow` neu benannt — Entscheidung braucht Produktabstimmung, nicht Teil dieses Standards.
+**Produktentscheidung (2026-07-08):** `IFAA_3` bleibt als Alias auf `bowhuman-scandinavian-3arrow` erhalten (siehe `examples/scoring-systems/bowhuman-scandinavian-3arrow.json`, bereits so hinterlegt) — keine Umbenennung des Robin-`systemId`-Werts. Bestandsdaten in exportierten BHS-002-Sessions bleiben damit unverändert lesbar; die Registry stellt über den Alias-Mechanismus klar, welches System tatsächlich gemeint ist. Die Frage, ob `robin/js/scoring.js` perspektivisch datengetrieben aus der BHS-004-Registry generiert wird (statt der hartkodierten `SYSTEMS`-Konstante), ist eine separate Engineering-Frage außerhalb dieses Standards und bleibt offen.
 
 ---
 
 ## 9. Offene Punkte für v1.0
 
-- [ ] DFBV Hunter-/Ein-Pfeil-Runde: Punktetabelle ist im Original-PDF nur als Grafik hinterlegt (Art. 6.7.9.4) — Zahlen müssen manuell aus dem Dokument oder per Rückfrage beim DFBV nachgetragen werden.
-- [ ] WA-3D-Zahlen sind nur aus Sekundärquellen bestätigt (offizielle Rulebook-Seite ist clientseitig gerendert und lieferte keinen Text) — vor STABLE-Status per PDF-Rulebook-Download verifizieren.
-- [ ] ASA- und IBO-Einträge sind US-Systeme ohne aktuellen bowhuman-Anwendungsfall — aufnehmen oder auf Registry-PR verschieben?
-- [ ] Entscheidung: Wird `robin/js/scoring.js` auf die Registry umgestellt, und wie wird `IFAA_3` benannt (Alias vs. Umbenennung, siehe §8)?
-- [ ] JSON Schema für `bhs-scoring-system` (§5, Datei existiert als Entwurf, noch nicht validiert gegen alle Beispiele)
-- [ ] Mehrsprachigkeit von `zones[].label_*` — reicht `label_de`/`label_en` oder braucht es ein generisches i18n-Objekt (vgl. offener Punkt in BHS-003 §7)?
-- [ ] Verhältnis zu `tie_break` bei Mehrschützen-Turnieren — gehört das eher zu einem zukünftigen "Tournament"-Dokument als zu BHS-004?
+- [x] DFBV Hunter-/Ein-Pfeil-Runde: Punktetabelle ist im Original-PDF nur als Grafik hinterlegt (Art. 6.7.9.4). **Recherche 2026-07-08:** Textextraktion beider verfügbaren Fassungen (Januar 2022 und Januar 2024) bestätigt identisch die Lücke — Abschnitt endet nach der Überschrift "6.7.9.4. Wertung" ohne Tabellentext, in beiden Jahrgängen. **Update:** Peter Klein hat die Werte aus der Grafik übermittelt — Kill/Innenkreis 20, Wund/Außenkreis 16, Körper außerhalb der Wertungszone 10 (drei Zonen). Deckt sich unabhängig mit "Variante J" (20/16/10) aus einem allgemeinen Community-Katalog (siehe §7). Registry-Eintrag `examples/scoring-systems/dfbv-hunter-runde.json` ergänzt, Konfidenz `secondary` (nicht `verified`, da textlich übermittelt statt selbst aus der Grafik gelesen).
+- [x] WA-3D-Zahlen verifizieren. **Recherche 2026-07-08:** Direkter PDF-Download (nicht die JS-Rulebook-Seite) liefert den Volltext. Fund: Die Zonenwerte stehen nicht in Book 4 Kapitel 9 (falsche Vermutung im ursprünglichen Draft), sondern in **Book 2 – Events, Art. 8.2.2.1 "Scoring zones"** (Version 2026-01-27): *"The target is divided into four scoring zones (11, 10, 8 and 5). […] 11 points for the small circle in the centre of the 10-ring. 10 points for the larger circle within the vital area. Eight points for the vital area outside the 10-point circle. Five points for the remaining body colour zone."* Dieselbe Quelle (Book 2, Art. 4.5.2.1) bestätigt auch `arrows_per_target: 2` für WA 3D — der ursprüngliche Draft-Wert "1–2 (klassenabhängig)" war falsch. Registry-Eintrag `examples/scoring-systems/wa-3d.json` ergänzt, Konfidenz `verified`.
+- [x] ASA aufnehmen (Produktentscheidung 2026-07-08). Registry-Eintrag `examples/scoring-systems/asa-pro-am.json` ergänzt, Konfidenz `secondary`. Bekannte Modellierungslücke dokumentiert: ASAs "Shooter's Choice"-Regel (zwei 12-Ringe, bedingte Wahl) passt nicht sauber in die flache Zone×Pfeilposition-Matrix, vereinfacht abgebildet.
+- [x] IBO aufnehmen (Produktentscheidung 2026-07-08, analog zu ASA). Registry-Eintrag `examples/scoring-systems/ibo-rules.json` ergänzt, Konfidenz `secondary`.
+- [x] Entscheidung `IFAA_3`-Benennung (Alias vs. Umbenennung, siehe §8): **Alias behalten**, keine Umbenennung (Produktentscheidung 2026-07-08). Ob `robin/js/scoring.js` datengetrieben aus der Registry generiert wird, bleibt eine offene, separate Engineering-Frage.
+- [x] JSON Schema für `bhs-scoring-system` (§5) — validiert gegen alle 4 Registry-Beispiele (`npm run validate`, 2026-07-08)
+- [x] Mehrsprachigkeit von `zones[].label_*` — **Entscheidung 2026-07-08:** generisches `LocalizedString`-Objekt (BHS-003 §3.14) übernommen, `Zone.label_de`/`label_en` → `Zone.label` (§2.2). Alle Registry-Beispiele migriert, Schema aktualisiert.
+- [x] Verhältnis zu `tie_break` bei Mehrschützen-Turnieren — **Entscheidung 2026-07-08:** Feld bleibt vorerst in BHS-004 (§2.8 enthält jetzt die Scoping-Klarstellung: bildet nur das Verbands-Standardverfahren ab, nicht bindend für andere Turniere). Fachlich gehört es zu einem künftigen Tournament-Format-Dokument (BHS-006), wohin es bei dessen Entstehung wandern sollte.
 
 ---
 
@@ -395,3 +401,8 @@ Zur Validierung (Entwurf, noch nicht final): [`../schemas/scoring-system-v1.sche
 | Version | Datum | Änderungen |
 |---|---|---|
 | 0.9 | 2026-07-08 | Initialer DRAFT — Recherche existierender Systeme, Kernmodell, Diskrepanz-Analyse zu Robin |
+| 0.9 | 2026-07-08 | §9: JSON-Schema-Validierung abgehakt (alle 4 Beispiele grün). §7/§9: DFBV-Hunter-Runde-Recherche vertieft — Lücke in 2022 **und** 2024 bestätigt, zwei widersprüchliche Community-Kandidatenwerte dokumentiert, nicht übernommen |
+| 0.9 | 2026-07-08 | §7/§9: WA-3D verifiziert (Book 2 Events Art. 8.2.2.1, statt der falsch vermuteten Book-4-Stelle), `arrows_per_target` von "1–2" auf bestätigt `2` korrigiert, Registry-Eintrag `wa-3d.json` ergänzt |
+| 0.9 | 2026-07-08 | Produktentscheidungen umgesetzt: `IFAA_3` bleibt Alias (§8/§9), ASA in Registry aufgenommen (`asa-pro-am.json`, secondary), DFBV-Hunter-Runde-Werte von Peter übermittelt und als `dfbv-hunter-runde.json` ergänzt (secondary). IBO-Frage bleibt offen. |
+| 0.9 | 2026-07-08 | `Zone.label_de`/`label_en` → `Zone.label: LocalizedString` (§2.2), konsistent mit BHS-003 §3.14. Alle Registry-Beispiele und das Schema migriert. |
+| 0.9 | 2026-07-08 | IBO aufgenommen (`ibo-rules.json`, secondary). `tie_break`-Scoping in §2.8 klargestellt: bildet nur das Verbands-Standardverfahren ab, nicht bindend für andere Turniere; künftige fachliche Heimat wäre ein Tournament-Format-Dokument (BHS-006). |

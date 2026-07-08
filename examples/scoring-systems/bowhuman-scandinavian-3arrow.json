@@ -1,37 +1,69 @@
 {
-  "__type":    "bhs-scoring-system",
+  "__type": "bhs-scoring-system",
   "__version": 1,
-  "id":         "bowhuman-scandinavian-3arrow",
-  "name":       "Skandinavische Wertung, 3 Pfeile",
+  "id": "bowhuman-scandinavian-3arrow",
+  "name": "Skandinavische Wertung, 3 Pfeile",
   "short_name": "Skandinavisch",
   "organization": "regional",
-  "region":       ["SE", "NO", "DK", "DE"],
-  "aliases": [
-    { "name": "IFAA_3", "source": "robin@2026-07-07 (js/scoring.js)", "note": "Dies ist das System, das Robins IFAA_3-Konstante tatsächlich implementiert — siehe BHS-004 §8. Der Name 'IFAA_3' ist irreführend, da IFAA/DFBV eine dritte Zone (Vital) kennt, dieses System aber nur zwei." }
+  "region": [
+    "SE",
+    "NO",
+    "DK",
+    "DE"
   ],
-  "discipline":     "3d",
-  "distance_mode":  "unknown",
+  "aliases": [
+    {
+      "name": "IFAA_3",
+      "source": "robin@2026-07-07 (js/scoring.js)",
+      "note": "Dies ist das System, das Robins IFAA_3-Konstante tatsächlich implementiert — siehe BHS-004 §8. Der Name 'IFAA_3' ist irreführend, da IFAA/DFBV eine dritte Zone (Vital) kennt, dieses System aber nur zwei."
+    }
+  ],
+  "discipline": "3d",
+  "distance_mode": "unknown",
   "zones": [
-    { "key": "kill", "label_de": "Kill",   "label_en": "Kill", "color": "yellow" },
-    { "key": "body", "label_de": "Körper", "label_en": "Body", "color": null }
+    {
+      "key": "kill",
+      "label": {
+        "de": "Kill",
+        "en": "Kill"
+      },
+      "color": "yellow"
+    },
+    {
+      "key": "body",
+      "label": {
+        "de": "Körper",
+        "en": "Body"
+      },
+      "color": null
+    }
   ],
   "arrows_per_target": 3,
   "arrow_rule": "first_hit_stops",
   "matrix": {
-    "1": { "kill": 20, "body": 16 },
-    "2": { "kill": 14, "body": 10 },
-    "3": { "kill": 8,  "body": 4  }
+    "1": {
+      "kill": 20,
+      "body": 16
+    },
+    "2": {
+      "kill": 14,
+      "body": 10
+    },
+    "3": {
+      "kill": 8,
+      "body": 4
+    }
   },
   "miss_score": 0,
   "max_score_per_target": 20,
   "tie_break": null,
   "status": "regional-variant",
   "source": {
-    "document":     "Skandinavische Wertung — FC Wiki (bogensportwiki.info)",
-    "url":          "http://www.bogensportwiki.info/index.php?title=Skandinavische_Wertung",
-    "version":      null,
+    "document": "Skandinavische Wertung — FC Wiki (bogensportwiki.info)",
+    "url": "http://www.bogensportwiki.info/index.php?title=Skandinavische_Wertung",
+    "version": null,
     "retrieved_at": "2026-07-08T00:00:00.000Z",
-    "confidence":   "secondary"
+    "confidence": "secondary"
   },
   "notes": "Community-Wiki-Quelle, keine Verbands-Primärquelle gefunden. Punktwerte stimmen exakt mit Robins bisheriger 'IFAA_3'-Konstante überein — deutlicher Hinweis, dass dort dieses System implementiert ist, nicht die DFBV-Drei-Pfeil-Runde.",
   "effective_from": null,
