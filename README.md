@@ -20,6 +20,7 @@ bowhuman bleibt Maintainer dieser Standards und Referenz-Implementierung. Die Sp
 | BHS-002 | Session Export Format | DRAFT | [specs/BHS-002-session-format.md](specs/BHS-002-session-format.md) |
 | BHS-003 | Venue & Club Metadata | DRAFT | [specs/BHS-003-venue-club-metadata.md](specs/BHS-003-venue-club-metadata.md) |
 | BHS-004 | Scoring System Metadata | DRAFT | [specs/BHS-004-scoring-system-metadata.md](specs/BHS-004-scoring-system-metadata.md) |
+| BHS-005 | Equipment Metadata | DRAFT | [specs/BHS-005-equipment-metadata.md](specs/BHS-005-equipment-metadata.md) |
 
 **BHS** = Bowhuman Standard
 
@@ -71,6 +72,22 @@ Metadatenformat für Wertungssysteme im 3D- und Feldbogensport: Zonen, Pfeil-Mat
 ```
 
 → [Vollständige Spec](specs/BHS-004-scoring-system-metadata.md) · [JSON Schema](schemas/scoring-system-v1.schema.json) · [Beispiele](examples/scoring-systems/)
+
+### BHS-005 — Equipment Metadata *(Draft)*
+
+Metadatenformat für Bogen, Pfeil und Bogen+Pfeil-Sets: `bhs-bow`, `bhs-arrow`, `bhs-equipment-set`. Bildet 1:1 die aktiven Sherwood-Tabellen ab (`equipment_bows`, `equipment_arrows`, `equipment_sets`). Dokumentiert außerdem eine Diskrepanz zwischen drei unterschiedlichen Bogentyp-Vokabularen im Ökosystem (Equipment-Tabelle, Altersklassen-Logik, BHS-003 `EquipmentClass`).
+
+```json
+{
+  "__type":   "bhs-bow",
+  "id":       "3f9a1b3e-2b7a-4c9e-9b0e-7a6c9d4e2f10",
+  "label":    "Hoyt Formula XI Turnier",
+  "bow_type": "Recurve",
+  "draw_weight_lbs": 38
+}
+```
+
+→ [Vollständige Spec](specs/BHS-005-equipment-metadata.md) · [JSON Schemas](schemas/bow-v1.schema.json) · [Beispiele](examples/equipment/)
 
 ---
 

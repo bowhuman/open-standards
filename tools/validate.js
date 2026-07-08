@@ -30,6 +30,9 @@ const TYPE_TO_SCHEMA = {
   'bhs-venue':           'venue-v1.schema.json',
   'bhs-club':            'club-v1.schema.json',
   'bhs-scoring-system':  'scoring-system-v1.schema.json',
+  'bhs-bow':             'bow-v1.schema.json',
+  'bhs-arrow':           'arrow-v1.schema.json',
+  'bhs-equipment-set':   'equipment-set-v1.schema.json',
 };
 
 function walk(dir) {

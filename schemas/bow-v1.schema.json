@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/bow-v1.schema.json",
+  "title": "BHS-005 Bow v1",
+  "description": "Bowhuman Standard BHS-005: ein einzelner Bogen (equipment_bows)",
+  "type": "object",
+  "required": ["__type", "__version", "id", "label", "bow_type", "created_at"],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-bow" },
+    "__version": { "type": "integer", "const": 1 },
+    "id":        { "type": "string", "format": "uuid" },
+    "label":     { "type": "string", "minLength": 1 },
+    "bow_type": {
+      "type": "string",
+      "enum": ["Recurve", "Compound", "Blankbogen", "Langbogen", "Instinktiv", "Primitivbogen", "Armbrust"]
+    },
+    "brand": { "type": ["string", "null"] },
+    "draw_weight_lbs": { "type": ["number", "null"], "minimum": 0 },
+    "draw_length_in":  { "type": ["number", "null"], "minimum": 0 },
+    "bow_length_in":   { "type": ["number", "null"], "minimum": 0 },
+    "brace_height_in": { "type": ["number", "null"], "minimum": 0 },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

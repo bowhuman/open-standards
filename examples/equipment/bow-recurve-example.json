@@ -1,0 +1,13 @@
+{
+  "__type":    "bhs-bow",
+  "__version": 1,
+  "id":        "3f9a1b3e-2b7a-4c9e-9b0e-7a6c9d4e2f10",
+  "label":     "Hoyt Formula XI Turnier",
+  "bow_type":  "Recurve",
+  "brand":     "Hoyt",
+  "draw_weight_lbs": 38,
+  "draw_length_in":  27.5,
+  "bow_length_in":   68,
+  "brace_height_in": 7.5,
+  "created_at": "2026-06-10T09:00:00.000Z"
+}
