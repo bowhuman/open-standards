@@ -118,16 +118,24 @@
         }
       }
     },
+    "DayValue": {
+      "description": "DayHours = geöffnet mit Zeiten. \"closed\" = an diesem Tag bewusst geschlossen. null = keine Angabe / unbekannt.",
+      "oneOf": [
+        { "$ref": "#/definitions/DayHours" },
+        { "type": "string", "const": "closed" },
+        { "type": "null" }
+      ]
+    },
     "OpeningHours": {
       "type": "object",
       "properties": {
-        "monday":    { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
-        "tuesday":   { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
-        "wednesday": { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
-        "thursday":  { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
-        "friday":    { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
-        "saturday":  { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
-        "sunday":    { "oneOf": [{ "$ref": "#/definitions/DayHours" }, { "type": "null" }] },
+        "monday":    { "$ref": "#/definitions/DayValue" },
+        "tuesday":   { "$ref": "#/definitions/DayValue" },
+        "wednesday": { "$ref": "#/definitions/DayValue" },
+        "thursday":  { "$ref": "#/definitions/DayValue" },
+        "friday":    { "$ref": "#/definitions/DayValue" },
+        "saturday":  { "$ref": "#/definitions/DayValue" },
+        "sunday":    { "$ref": "#/definitions/DayValue" },
         "seasons": {
           "type": "array",
           "items": {
@@ -137,7 +145,18 @@
               "name":  { "type": "string" },
               "from":  { "type": "string", "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$" },
               "to":    { "type": "string", "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$" },
-              "hours": { "type": "object" }
+              "hours": {
+                "type": "object",
+                "properties": {
+                  "monday":    { "$ref": "#/definitions/DayValue" },
+                  "tuesday":   { "$ref": "#/definitions/DayValue" },
+                  "wednesday": { "$ref": "#/definitions/DayValue" },
+                  "thursday":  { "$ref": "#/definitions/DayValue" },
+                  "friday":    { "$ref": "#/definitions/DayValue" },
+                  "saturday":  { "$ref": "#/definitions/DayValue" },
+                  "sunday":    { "$ref": "#/definitions/DayValue" }
+                }
+              }
             }
           }
         }

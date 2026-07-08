@@ -118,8 +118,8 @@ interface Venue {
     "source": "manual"
   },
   "opening_hours": {
-    "monday":    null,
-    "tuesday":   null,
+    "monday":    "closed",
+    "tuesday":   "closed",
     "wednesday": { "open": "10:00", "close": "17:00" },
     "thursday":  { "open": "10:00", "close": "17:00" },
     "friday":    { "open": "10:00", "close": "17:00" },
@@ -131,11 +131,11 @@ interface Venue {
         "from": "11-01",
         "to":   "02-28",
         "hours": {
-          "saturday": { "open": "10:00", "close": "16:00" },
-          "sunday":   { "open": "10:00", "close": "16:00" },
-          "wednesday": null,
-          "thursday":  null,
-          "friday":    null
+          "saturday":  { "open": "10:00", "close": "16:00" },
+          "sunday":    { "open": "10:00", "close": "16:00" },
+          "wednesday": "closed",
+          "thursday":  "closed",
+          "friday":    "closed"
         }
       }
     ]
@@ -299,14 +299,19 @@ interface Social {
 ### 3.4 OpeningHours
 
 ```typescript
+type DayValue = DayHours | "closed" | null;
+// DayHours  = an diesem Tag geöffnet, mit Zeiten
+// "closed"  = an diesem Tag bewusst geschlossen (bekannter Fakt)
+// null      = keine Angabe / unbekannt — NICHT mit "closed" verwechseln
+
 interface OpeningHours {
-  monday:    DayHours | null;  // null = geschlossen
-  tuesday:   DayHours | null;
-  wednesday: DayHours | null;
-  thursday:  DayHours | null;
-  friday:    DayHours | null;
-  saturday:  DayHours | null;
-  sunday:    DayHours | null;
+  monday:    DayValue;
+  tuesday:   DayValue;
+  wednesday: DayValue;
+  thursday:  DayValue;
+  friday:    DayValue;
+  saturday:  DayValue;
+  sunday:    DayValue;
   seasons?:  SeasonalHours[];
 }
 
@@ -321,10 +326,12 @@ interface SeasonalHours {
   name:  string;   // z.B. "Winter", "Sommersaison"
   from:  string;   // "MM-DD", z.B. "11-01"
   to:    string;   // "MM-DD", z.B. "02-28"
-  hours: Partial<Record<keyof Omit<OpeningHours, "seasons">, DayHours | null>>;
+  hours: Partial<Record<keyof Omit<OpeningHours, "seasons">, DayValue>>;
   // Überschreibt nur die angegebenen Tage; nicht genannte Tage gelten wie Basisplan
 }
 ```
+
+**Warum die Unterscheidung nötig ist:** `null` wurde in v0.9 ursprünglich als "geschlossen" gelesen. Das kollidiert mit der üblichen Konvention in verwandten Formaten (z.B. schema.org, OpenStreetMap), wo ein fehlender/`null`-Wert eher "keine Angabe" bedeutet. Ab sofort gilt: `"closed"` ist die explizite Aussage "an diesem Tag ist bewusst geschlossen" (z.B. Ruhetag), `null` bedeutet "dazu liegt keine Information vor". Diese Trennung ist für Community-Server-Konsumenten wichtig, die z.B. "Montag: Ruhetag" von "Montag: unbekannt, bitte Betreiber fragen" unterscheiden müssen.
 
 ### 3.5 Pricing
 
@@ -471,3 +478,4 @@ Beispiele:
 | Version | Datum | Änderungen |
 |---|---|---|
 | 0.9 | 2026-06-25 | Initialer DRAFT |
+| 0.9 | 2026-07-08 | `OpeningHours`/`SeasonalHours`: `"closed"`-Sentinel eingeführt, `null` bedeutet jetzt "keine Angabe" statt "geschlossen" (§3.4) |
