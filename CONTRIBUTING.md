@@ -90,10 +90,18 @@ Respektvoller Umgang ist Voraussetzung. Konstruktive Kritik ja, persönliche Ang
 Wenn du eine Implementierung gebaut hast und sie gegen die Specs testen möchtest:
 
 ```bash
-# JSON Schema Validierung mit ajv (Node.js)
+# Alle Beispiele im Repo auf einmal
+npm install && npm run validate
+
+# Einzelne eigene Datei
+node tools/validate.js deine-datei.json
+
+# Alternativ: ajv-cli direkt
 npm install -g ajv-cli
 ajv validate -s schemas/parcours-v1.schema.json -d deine-datei.json
 ```
+
+Ein PR, der ein neues Beispiel unter `examples/` hinzufügt, sollte `npm run validate` fehlerfrei durchlaufen.
 
 ---
 

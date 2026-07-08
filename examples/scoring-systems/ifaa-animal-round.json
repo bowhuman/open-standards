@@ -1,0 +1,39 @@
+{
+  "__type":    "bhs-scoring-system",
+  "__version": 1,
+  "id":         "ifaa-animal-round",
+  "name":       "IFAA Animal Round",
+  "short_name": "IFAA Animal",
+  "organization": "IFAA",
+  "region":       ["INT"],
+  "aliases": [],
+  "discipline":     "hunter",
+  "distance_mode":  "unknown",
+  "zones": [
+    { "key": "vital",     "label_de": "Vital",     "label_en": "Vital",    "color": null },
+    { "key": "non_vital", "label_de": "Nicht-Vital", "label_en": "Non-Vital", "color": null }
+  ],
+  "arrows_per_target": 3,
+  "arrow_rule": "first_hit_stops",
+  "matrix": {
+    "1": { "vital": 20, "non_vital": 18 },
+    "2": { "vital": 16, "non_vital": 14 },
+    "3": { "vital": 12, "non_vital": 10 }
+  },
+  "miss_score": 0,
+  "max_score_per_target": 20,
+  "tie_break": null,
+  "status": "official",
+  "source": {
+    "document":     "Field, Hunter, and Animal Rounds (abbreviated) — Northern Virginia Archers, zitiert IFAA-Regelwerk",
+    "url":          "https://norva.club/home/field-hunter-and-animal-rounds-abbreviated/",
+    "version":      null,
+    "retrieved_at": "2026-07-08T00:00:00.000Z",
+    "confidence":   "secondary"
+  },
+  "notes": "Sekundärquelle (Vereinsseite), keine IFAA-Originaldokument-PDF direkt eingesehen. Vor STABLE-Status gegen das offizielle IFAA Field Archery Manual verifizieren (siehe BHS-004 §9).",
+  "effective_from": null,
+  "superseded_by": null,
+  "created_at": "2026-07-08T00:00:00.000Z",
+  "updated_at": "2026-07-08T00:00:00.000Z"
+}

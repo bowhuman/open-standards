@@ -19,6 +19,7 @@ bowhuman bleibt Maintainer dieser Standards und Referenz-Implementierung. Die Sp
 | BHS-001 | Parcours Exchange Format | STABLE | [specs/BHS-001-parcours-format.md](specs/BHS-001-parcours-format.md) |
 | BHS-002 | Session Export Format | DRAFT | [specs/BHS-002-session-format.md](specs/BHS-002-session-format.md) |
 | BHS-003 | Venue & Club Metadata | DRAFT | [specs/BHS-003-venue-club-metadata.md](specs/BHS-003-venue-club-metadata.md) |
+| BHS-004 | Scoring System Metadata | DRAFT | [specs/BHS-004-scoring-system-metadata.md](specs/BHS-004-scoring-system-metadata.md) |
 
 **BHS** = Bowhuman Standard
 
@@ -56,11 +57,45 @@ Das Format für exportierte Scoring-Sessions aus Robin. Enthält Schützendaten,
 
 → [Vollständige Spec](specs/BHS-002-session-format.md)
 
+### BHS-004 — Scoring System Metadata *(Draft)*
+
+Metadatenformat für Wertungssysteme im 3D- und Feldbogensport: Zonen, Pfeil-Matrix, Quellenangabe. Löst die in BHS-002 offene Frage nach einer vollständigen `systemId`-Liste. Enthält eine wachsende Registry recherchierter Systeme (DFBV, IFAA, ASA, IBO, WA) in [`examples/scoring-systems/`](examples/scoring-systems/).
+
+```json
+{
+  "__type":  "bhs-scoring-system",
+  "id":      "dfbv-3pfeil-2024",
+  "zones":   [{ "key": "kill" }, { "key": "vital" }, { "key": "wound" }],
+  "matrix":  { "1": { "kill": 20, "vital": 18, "wound": 16 } }
+}
+```
+
+→ [Vollständige Spec](specs/BHS-004-scoring-system-metadata.md) · [JSON Schema](schemas/scoring-system-v1.schema.json) · [Beispiele](examples/scoring-systems/)
+
 ---
 
 ## Validierung
 
-Parcours-Dateien können mit dem bereitgestellten JSON Schema validiert werden:
+### Im Browser
+
+[bowhuman.eu/standards/validator.html](https://www.bowhuman.eu/standards/validator.html) — JSON einfügen oder Datei hochladen, läuft vollständig clientseitig (nichts wird hochgeladen). Praktisch für einen schnellen Check ohne Node/npm. Für verbindliche Validierung (CI, PRs) gilt weiterhin `npm run validate` unten, da der Browser-Validator ein handgeschriebenes Draft-07-Subset nutzt statt ajv.
+
+### Alle Beispiele auf einmal (empfohlen)
+
+```bash
+npm install
+npm run validate
+```
+
+Prüft rekursiv alle Dateien unter `examples/` gegen das zu ihrem `__type` passende Schema (`tools/validate.js`). Dateien mit einem `__type`, für den es noch kein Schema gibt (aktuell: `hawkeye-session`, siehe BHS-002 §10), werden übersprungen statt als Fehler gezählt.
+
+Einzelne Datei prüfen:
+
+```bash
+node tools/validate.js pfad/zu/meiner-datei.json
+```
+
+### Einzelne Datei mit ajv-cli
 
 ```bash
 # ajv-cli (Node.js)

@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/scoring-system-v1.schema.json",
+  "title": "BHS-004 Scoring System v1",
+  "description": "Bowhuman Standard BHS-004: Metadaten eines Wertungssystems (Zonen, Pfeil-Matrix, Quelle)",
+  "type": "object",
+  "required": [
+    "__type", "__version", "id", "name", "organization", "region",
+    "zones", "arrows_per_target", "arrow_rule", "matrix", "miss_score",
+    "status", "source"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-scoring-system" },
+    "__version": { "type": "integer", "const": 1 },
+    "id":         { "type": "string", "minLength": 1, "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "name":       { "type": "string", "minLength": 1 },
+    "short_name": { "type": ["string", "null"] },
+
+    "organization": {
+      "type": "string",
+      "description": "Bekannte Werte: IFAA, DFBV, ASA, IBO, WA, regional, club, bowhuman — sonst Freitext"
+    },
+    "region": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "ISO 3166-1 alpha-2 oder \"INT\""
+    },
+    "aliases": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Alias" }
+    },
+
+    "discipline": {
+      "type": "string",
+      "enum": ["3d", "field", "hunter", "indoor"]
+    },
+    "distance_mode": {
+      "type": "string",
+      "enum": ["known", "unknown", "both"]
+    },
+
+    "zones": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/Zone" }
+    },
+    "arrows_per_target": { "type": "integer", "minimum": 1 },
+    "arrow_rule": {
+      "type": "string",
+      "enum": ["first_hit_stops", "fixed_count_all_scored", "best_of"]
+    },
+    "matrix": {
+      "type": "object",
+      "description": "Schlüssel: Pfeilposition als String (\"1\", \"2\", ...). Wert: Objekt Zone.key -> Punktzahl.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "number" }
+      }
+    },
+    "miss_score": { "type": "number" },
+
+    "max_score_per_target": { "type": ["integer", "null"] },
+    "tie_break": {
+      "oneOf": [
+        { "type": "array", "items": { "$ref": "#/definitions/TieBreakRule" } },
+        { "type": "null" }
+      ]
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["official", "regional-variant", "club-variant", "legacy", "proposed"]
+    },
+    "source": { "$ref": "#/definitions/Source" },
+    "notes":  { "type": ["string", "null"] },
+
+    "effective_from": { "type": ["string", "null"], "format": "date" },
+    "superseded_by":  { "type": ["string", "null"] },
+
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "definitions": {
+    "Zone": {
+      "type": "object",
+      "required": ["key", "label_de", "label_en"],
+      "additionalProperties": false,
+      "properties": {
+        "key":      { "type": "string", "minLength": 1 },
+        "label_de": { "type": "string", "minLength": 1 },
+        "label_en": { "type": "string", "minLength": 1 },
+        "color":    { "type": ["string", "null"] }
+      }
+    },
+    "Alias": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name":   { "type": "string", "minLength": 1 },
+        "source": { "type": ["string", "null"] },
+        "note":   { "type": ["string", "null"] }
+      }
+    },
+    "TieBreakRule": {
+      "type": "object",
+      "required": ["criterion", "order"],
+      "additionalProperties": false,
+      "properties": {
+        "criterion": { "type": "string", "minLength": 1 },
+        "order":     { "type": "integer", "minimum": 1 },
+        "note":      { "type": ["string", "null"] }
+      }
+    },
+    "Source": {
+      "type": "object",
+      "required": ["document", "retrieved_at", "confidence"],
+      "additionalProperties": false,
+      "properties": {
+        "document":     { "type": "string", "minLength": 1 },
+        "url":          { "type": ["string", "null"], "format": "uri" },
+        "version":      { "type": ["string", "null"] },
+        "retrieved_at": { "type": "string", "format": "date-time" },
+        "confidence":   { "type": "string", "enum": ["verified", "secondary", "unverified"] }
+      }
+    }
+  }
+}

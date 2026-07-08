@@ -164,7 +164,7 @@ type ScoringZone =
 | `"IFAA_3"` | IFAA 3 Pfeile | 3 | 20/16/12 | 18/14/10 | 0 |
 | `"ASA"` | ASA-Wertung | 1–2 | 12/10 | — | 0 |
 
-> **Offene Frage (DRAFT):** Die vollständige Liste der `systemId`-Werte und die exakten Punktetabellen aller Systeme müssen noch dokumentiert werden. Feedback willkommen: Issues → Label `bhs-002`.
+> **Update 2026-07-08:** Diese offene Frage wird durch [BHS-004 (Scoring System Metadata)](BHS-004-scoring-system-metadata.md) beantwortet. `systemId` referenziert ab sofort `ScoringSystem.id` aus der dortigen Registry; bestehende Legacy-Werte (`IFAA_3`, `IFAA_1`, `WA_3D`) bleiben als Aliase gültig (BHS-004 §6.1). BHS-004 dokumentiert außerdem eine konkrete Diskrepanz: Robins produktive `IFAA_3`-Konstante entspricht nicht der DFBV/IFAA-Standardwertung, sondern der Skandinavischen Wertung (BHS-004 §8) — noch ungeklärt, siehe BHS-004 §9.
 
 ---
 
@@ -333,3 +333,4 @@ Diese Punkte müssen vor dem Status STABLE geklärt werden:
 | Version | Datum | Änderungen |
 |---|---|---|
 | 0.9 | 2026-06-25 | Initialer DRAFT |
+| 0.9 | 2026-07-08 | §5.2 verweist auf BHS-004 (Scoring System Metadata) als Antwort auf die offene `systemId`-Frage |
