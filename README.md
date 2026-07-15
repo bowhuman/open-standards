@@ -21,6 +21,7 @@ bowhuman bleibt Maintainer dieser Standards und Referenz-Implementierung. Die Sp
 | BHS-003 | Venue & Club Metadata | DRAFT | [specs/BHS-003-venue-club-metadata.md](specs/BHS-003-venue-club-metadata.md) |
 | BHS-004 | Scoring System Metadata | DRAFT | [specs/BHS-004-scoring-system-metadata.md](specs/BHS-004-scoring-system-metadata.md) |
 | BHS-005 | Equipment Metadata | DRAFT | [specs/BHS-005-equipment-metadata.md](specs/BHS-005-equipment-metadata.md) |
+| BHS-006 | Tournament Metadata | DRAFT | [specs/BHS-006-tournament-metadata.md](specs/BHS-006-tournament-metadata.md) |
 
 **BHS** = Bowhuman Standard
 
@@ -58,6 +59,22 @@ Das Format für exportierte Scoring-Sessions aus Robin. Enthält Schützendaten,
 
 → [Vollständige Spec](specs/BHS-002-session-format.md)
 
+### BHS-003 — Venue & Club Metadata *(Draft)*
+
+Zwei Profile: `bhs-venue` (Parcours-Standort mit Betreiberprofil — Kontakt, Öffnungszeiten, Preise, erlaubte Ausrüstung, Einrichtungen) und `bhs-club` (Bogensportverein — Trainingszeiten, Mitgliedschaft, Verbandszugehörigkeit). Beide eigenständig, optional miteinander verknüpft. Enthält außerdem mehrere wiederverwendbare Typen, auf die spätere Standards aufbauen (`Address`, `GpsPoint`, `EquipmentClass`, `Association`, `LocalizedString` u.a.).
+
+```json
+{
+  "__type": "bhs-venue",
+  "id":     "schaumberg-dk-2026",
+  "name":   "DK Bowfactory — Schaumberg",
+  "address": { "city": "St. Wendel – Remmesweiler", "country": "DE" },
+  "opening_hours": { "saturday": { "open": "09:00", "close": "18:00" } }
+}
+```
+
+→ [Vollständige Spec](specs/BHS-003-venue-club-metadata.md) · [JSON Schema Venue](schemas/venue-v1.schema.json) · [JSON Schema Club](schemas/club-v1.schema.json)
+
 ### BHS-004 — Scoring System Metadata *(Draft)*
 
 Metadatenformat für Wertungssysteme im 3D- und Feldbogensport: Zonen, Pfeil-Matrix, Quellenangabe. Löst die in BHS-002 offene Frage nach einer vollständigen `systemId`-Liste. Enthält eine wachsende Registry recherchierter Systeme (DFBV, IFAA, ASA, IBO, WA) in [`examples/scoring-systems/`](examples/scoring-systems/).
@@ -88,6 +105,21 @@ Metadatenformat für Bogen, Pfeil und Bogen+Pfeil-Sets: `bhs-bow`, `bhs-arrow`, 
 ```
 
 → [Vollständige Spec](specs/BHS-005-equipment-metadata.md) · [JSON Schemas](schemas/bow-v1.schema.json) · [Beispiele](examples/equipment/)
+
+### BHS-006 — Tournament Metadata *(Draft)*
+
+Metadatenformat für Bogenturniere: Name, Termin, Ort/Anfahrt, Zulassung (Bogenklassen, Schützenklassen, Verbandslizenz), Preise, Registrierung und Zeitplan. Referenziert BHS-003 (Venue/Club) und BHS-004 (`scoring_system_id`) statt deren Inhalte zu duplizieren — Wertungsregeln bleiben vollständig in BHS-004. Bewusst kein Live-Kapazitätsfeld (implementierungsspezifisch), stattdessen ein statisches `max_participants`.
+
+```json
+{
+  "__type": "bhs-tournament",
+  "id":     "schaumberg-bogen-open-2026",
+  "name":   "Schaumberg Bogen-Open 2026",
+  "date":   "2026-09-12"
+}
+```
+
+→ [Vollständige Spec](specs/BHS-006-tournament-metadata.md) · [JSON Schema](schemas/tournament-v1.schema.json) · [Beispiele](examples/tournaments/)
 
 ---
 

@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/tournament-v1.schema.json",
+  "title": "BHS-006 Tournament v1",
+  "description": "Bowhuman Standard BHS-006: Turnier-Event-Metadaten (Name, Termin, Ort, Zulassung, Preise, Zeitplan). Kein Kapazitäts-/Live-Tracking-Feld (bewusst implementierungsspezifisch, siehe Spec §2.10). Wertungsregeln/tie_break bleiben in BHS-004 (scoring-system-v1.schema.json).",
+  "type": "object",
+  "required": ["__type", "__version", "id", "name", "date"],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-tournament" },
+    "__version": { "type": "integer", "const": 1 },
+
+    "id":       { "type": "string", "minLength": 1, "pattern": "^([a-z0-9]+(-[a-z0-9]+)*|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$", "description": "Slug (lowercase-kebab) oder UUID (beliebige Groß-/Kleinschreibung, RFC-4122-Form), analog BHS-004 id-Pattern." },
+    "name":     { "type": "string", "minLength": 1 },
+    "date":     { "type": "string", "format": "date" },
+    "date_end": { "type": ["string", "null"], "format": "date" },
+
+    "status": {
+      "type": "string",
+      "enum": ["announced", "open", "closed", "cancelled"],
+      "default": "announced"
+    },
+
+    "discipline": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["3d", "field", "indoor", "outdoor", "flight"] }
+    },
+    "scoring_system_id": {
+      "type": ["string", "null"],
+      "description": "Referenz auf ScoringSystem.id (BHS-004). Keine Punktetabelle/tie_break hier duplizieren."
+    },
+
+    "location":  { "oneOf": [{ "$ref": "#/definitions/Location" }, { "type": "null" }] },
+    "organizer": { "oneOf": [{ "$ref": "#/definitions/Organizer" }, { "type": "null" }] },
+    "contact":   { "oneOf": [{ "$ref": "#/definitions/Contact" }, { "type": "null" }] },
+
+    "eligibility":  { "oneOf": [{ "$ref": "#/definitions/Eligibility" }, { "type": "null" }] },
+    "registration": { "oneOf": [{ "$ref": "#/definitions/Registration" }, { "type": "null" }] },
+    "pricing":      { "oneOf": [{ "$ref": "#/definitions/TournamentPricing" }, { "type": "null" }] },
+
+    "schedule": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/ScheduleItem" }
+    },
+    "camping":          { "type": ["boolean", "null"] },
+    "announcement_url": { "type": ["string", "null"], "format": "uri" },
+
+    "external_ref": { "oneOf": [{ "$ref": "#/definitions/ExternalRef" }, { "type": "null" }] },
+
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "definitions": {
+    "Address": {
+      "description": "Siehe BHS-003 §3.1.",
+      "type": "object",
+      "required": ["city", "country"],
+      "properties": {
+        "street":  { "type": ["string", "null"] },
+        "zip":     { "type": ["string", "null"] },
+        "city":    { "type": "string", "minLength": 1 },
+        "region":  { "type": ["string", "null"] },
+        "country": { "type": "string", "minLength": 2, "maxLength": 2 }
+      }
+    },
+    "GpsPoint": {
+      "description": "Siehe BHS-001 §3.1 / BHS-003 §3.2.",
+      "type": "object",
+      "required": ["lat", "lon"],
+      "properties": {
+        "lat":      { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon":      { "type": "number", "minimum": -180, "maximum": 180 },
+        "accuracy": { "type": ["number", "null"] },
+        "alt":      { "type": ["number", "null"] },
+        "source":   { "type": "string", "enum": ["gps", "exif", "walk", "manual", "merged"] }
+      }
+    },
+    "Location": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "venue_id":   { "type": ["string", "null"] },
+        "name":       { "type": ["string", "null"] },
+        "address":    { "oneOf": [{ "$ref": "#/definitions/Address" }, { "type": "null" }] },
+        "gps":        { "oneOf": [{ "$ref": "#/definitions/GpsPoint" }, { "type": "null" }] },
+        "directions": { "type": ["string", "null"] }
+      }
+    },
+    "Organizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "club_id": { "type": ["string", "null"] },
+        "name":    { "type": ["string", "null"] }
+      }
+    },
+    "Contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name":  { "type": ["string", "null"] },
+        "email": { "type": ["string", "null"], "format": "email" },
+        "phone": { "type": ["string", "null"] }
+      }
+    },
+    "Eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "equipment_classes": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["recurve", "compound", "barebow", "longbow", "traditional", "crossbow"] },
+          "description": "BHS-003 §3.7 EquipmentClass. Leer = alle Klassen erlaubt."
+        },
+        "classes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Schützenklassen nach Regelwerk (Freitext, kein Enum). Bewusst kein Geburtsdatum/Geschlecht — Datensparsamkeit, siehe BHS-006 §2.7 / BHS-005 §8."
+        },
+        "associations": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "BHS-003 §3.10 Association (Freitext erlaubt)."
+        },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "Registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required":         { "type": ["boolean", "null"] },
+        "opens_at":         { "type": ["string", "null"], "format": "date-time", "description": "Anmeldestart. Zeitstempel statt Datum, da bei schnell ausgebuchten Turnieren auch die Uhrzeit zaehlt." },
+        "deadline":         { "type": ["string", "null"], "format": "date" },
+        "url":              { "type": ["string", "null"], "format": "uri" },
+        "max_participants": { "type": ["integer", "null"], "minimum": 1, "description": "Statischer Platzhoechstwert laut Ausschreibung. Kein Live-Feld, siehe Spec §2.10." }
+      }
+    },
+    "TournamentPricing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entry_fee_eur": { "type": ["number", "null"], "minimum": 0 },
+        "entry_fee_by_class": {
+          "type": ["object", "null"],
+          "additionalProperties": { "type": "number", "minimum": 0 }
+        },
+        "early_bird_fee_eur":  { "type": ["number", "null"], "minimum": 0 },
+        "early_bird_deadline": { "type": ["string", "null"], "format": "date" },
+        "payment_methods": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["cash", "card", "paypal", "wero", "bank_transfer", "other"] }
+        },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "ScheduleItem": {
+      "type": "object",
+      "required": ["label"],
+      "additionalProperties": false,
+      "properties": {
+        "time":  { "type": ["string", "null"], "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    },
+    "ExternalRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source":              { "type": ["string", "null"] },
+        "external_id":         { "type": ["string", "null"] },
+        "source_url":          { "type": ["string", "null"], "format": "uri" },
+        "nottingham_event_id": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

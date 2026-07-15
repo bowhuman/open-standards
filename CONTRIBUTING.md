@@ -36,6 +36,10 @@ Bevor du ein Issue öffnest: Durchsuche die offenen und geschlossenen Issues. De
 | `clarification` | Unklare Formulierung, Edge Case |
 | `bhs-001` | Betrifft Parcours-Format |
 | `bhs-002` | Betrifft Session-Format |
+| `bhs-003` | Betrifft Venue & Club Metadata |
+| `bhs-004` | Betrifft Scoring System Metadata |
+| `bhs-005` | Betrifft Equipment Metadata |
+| `bhs-006` | Betrifft Tournament Metadata |
 | `new-feature` | Vorschlag für neues Feld / neues Dokument |
 | `question` | Frage ohne Änderungswunsch |
 
