@@ -1,0 +1,29 @@
+{
+  "__type":    "bhs-archer",
+  "__version": 1,
+  "id":        "9f1c2b3a-4d5e-4f60-8a7b-1c2d3e4f5a6b",
+  "first_name": "Erika",
+  "last_name":  "Musterfrau",
+  "equipment_classes": ["recurve"],
+  "classes": [
+    {
+      "discipline":      "3d",
+      "association":     "DSB",
+      "equipment_class": "recurve",
+      "class":           "Damen (10)"
+    },
+    {
+      "discipline":      "field",
+      "association":     "DFBV",
+      "equipment_class": "recurve",
+      "class":           "Damen"
+    }
+  ],
+  "associations": ["DSB", "DFBV"],
+  "nickname": "Wallace",
+  "claim":    "Nicht jeder Pfeil muss treffen — Hauptsache er fliegt schön.",
+  "bio":      "Seit 2019 dabei, am liebsten auf Waldparcours mit viel Gefälle.",
+  "avatar":   null,
+  "created_at": "2026-07-16T08:00:00.000Z",
+  "updated_at": "2026-07-16T08:00:00.000Z"
+}

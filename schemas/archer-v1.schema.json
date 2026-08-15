@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/archer-v1.schema.json",
+  "title": "BHS-007 Archer v1",
+  "description": "Bowhuman Standard BHS-007: Schuetzen-Metadaten (Identitaet, Eligibility-Klassifikation, optionales Sozialprofil). Keine BOWHUMAN-Rollen/Vereinsmitgliedschaft/Zugangsdaten, siehe Spec §1.3.",
+  "type": "object",
+  "required": ["__type", "__version", "id", "first_name", "last_name"],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-archer" },
+    "__version": { "type": "integer", "const": 1 },
+
+    "id":         { "type": "string", "minLength": 1, "pattern": "^([a-z0-9]+(-[a-z0-9]+)*|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$" },
+    "first_name": { "type": "string", "minLength": 1 },
+    "last_name":  { "type": "string", "minLength": 1 },
+
+    "equipment_classes": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["recurve", "compound", "barebow", "longbow", "traditional", "crossbow"] },
+      "description": "BHS-003 §3.7 EquipmentClass."
+    },
+    "classes": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/ArcherClass" }
+    },
+    "associations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "BHS-003 §3.10 Association (Freitext erlaubt)."
+    },
+
+    "nickname": { "type": ["string", "null"] },
+    "claim":    { "type": ["string", "null"] },
+    "bio":      { "type": ["string", "null"] },
+    "avatar":   { "type": ["string", "null"], "description": "Data-URL oder https-URL, siehe Spec §2.4." },
+
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "definitions": {
+    "ArcherClass": {
+      "type": "object",
+      "required": ["discipline", "association", "equipment_class", "class"],
+      "additionalProperties": false,
+      "properties": {
+        "discipline": {
+          "type": "string",
+          "enum": ["3d", "field", "indoor", "outdoor", "flight"],
+          "description": "BHS-003 §3.13 Discipline."
+        },
+        "association": {
+          "type": "string",
+          "description": "BHS-003 §3.10 Association (Freitext erlaubt) — welcher Verband definiert diese Klasse."
+        },
+        "equipment_class": {
+          "type": "string",
+          "enum": ["recurve", "compound", "barebow", "longbow", "traditional", "crossbow"],
+          "description": "BHS-003 §3.7 EquipmentClass — bei DSB klassenbestimmend, bei DBSV nur informativ. Siehe Spec §2.3."
+        },
+        "class": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Die Klassenbezeichnung selbst, z.B. \"Herren (10)\", \"U18 w\"."
+        }
+      }
+    }
+  }
+}

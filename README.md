@@ -22,6 +22,7 @@ bowhuman bleibt Maintainer dieser Standards und Referenz-Implementierung. Die Sp
 | BHS-004 | Scoring System Metadata | DRAFT | [specs/BHS-004-scoring-system-metadata.md](specs/BHS-004-scoring-system-metadata.md) |
 | BHS-005 | Equipment Metadata | DRAFT | [specs/BHS-005-equipment-metadata.md](specs/BHS-005-equipment-metadata.md) |
 | BHS-006 | Tournament Metadata | DRAFT | [specs/BHS-006-tournament-metadata.md](specs/BHS-006-tournament-metadata.md) |
+| BHS-007 | Archer Metadata | DRAFT | [specs/BHS-007-archer-metadata.md](specs/BHS-007-archer-metadata.md) |
 
 **BHS** = Bowhuman Standard
 
@@ -120,6 +121,22 @@ Metadatenformat für Bogenturniere: Name, Termin, Ort/Anfahrt, Zulassung (Bogenk
 ```
 
 → [Vollständige Spec](specs/BHS-006-tournament-metadata.md) · [JSON Schema](schemas/tournament-v1.schema.json) · [Beispiele](examples/tournaments/)
+
+### BHS-007 — Archer Metadata *(Draft)*
+
+Metadatenformat für Schützen: Identität (Vor-/Nachname), Eligibility-Klassifikation (Bogenklassen, Wettkampfklasse je Disziplin/Verband/Bogenklasse) und ein optionales, portables Sozialprofil (Spitzname, Claim, Bio, Avatar). Bewusst **kein** Vereinsmitgliedschafts-/Rollenmodell — das bleibt BOWHUMAN-intern. Gegenstück zu BHS-006 `Eligibility`: ein Turnier erklärt, was es zulässt, ein Archer erklärt, was er ist.
+
+```json
+{
+  "__type": "bhs-archer",
+  "id":     "9f1c2b3a-4d5e-4f60-8a7b-1c2d3e4f5a6b",
+  "first_name": "Erika",
+  "last_name":  "Musterfrau",
+  "classes": [{ "discipline": "3d", "association": "DSB", "equipment_class": "recurve", "class": "Damen (10)" }]
+}
+```
+
+→ [Vollständige Spec](specs/BHS-007-archer-metadata.md) · [JSON Schema](schemas/archer-v1.schema.json) · [Beispiele](examples/archers/)
 
 ---
 
