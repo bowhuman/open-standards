@@ -11,19 +11,29 @@
 | Abhängig von | BHS-002 (Session Export Format) |
 | Löst | BHS-002 §5.2 (offene `systemId`-Frage) |
 
-> **DRAFT**: Dieses Dokument ist ein Erstvorschlag zur Diskussion. Es entstand aus einer Recherche existierender Wertungssysteme im 3D-Bogensport (siehe §7) und dem Abgleich mit der tatsächlich in Robin implementierten Scoring-Engine (`robin/js/scoring.js`). Es ist **noch nicht** implementiert.
+> **DRAFT**: Dieses Dokument ist ein Erstvorschlag zur Diskussion. Es entstand aus einer Recherche existierender Punkteschemata im 3D-Bogensport (siehe §7) und dem Abgleich mit der tatsächlich in Robin implementierten Scoring-Engine (`robin/js/scoring.js`). Es ist **noch nicht** implementiert.
 
 ---
 
 ## Kurzfassung
 
-Dieses Dokument definiert ein Metadatenformat für **Wertungssysteme** (`bhs-scoring-system`) im 3D- und Feldbogensport. Ein Wertungssystem beschreibt, wie aus einem Treffer (Zone) und einer Pfeilnummer ein Punktwert wird — unabhängig von der App, die diese Regel anwendet.
+Dieses Dokument definiert ein Metadatenformat für **Punkteschemata** (`bhs-scoring-system`) im 3D- und Feldbogensport. Ein Punkteschema beschreibt, wie aus einem Treffer (Zone) und einer Pfeilnummer ein Punktwert wird — unabhängig von der App, die diese Regel anwendet.
 
-BHS-002 (Session Export Format) verweist bereits auf ein `systemId`-Feld (z.B. `"IFAA_3"`), hat aber nie definiert, was die vollständige Liste gültiger IDs ist und wo ihre Punktetabellen herkommen (§5.2, offener Punkt). BHS-004 schließt diese Lücke: Es macht Wertungssysteme zu eigenständigen, zitierfähigen, versionierten Datenobjekten statt zu hartcodierten Konstanten in einer App.
+> **Begriffliche Abgrenzung (2026-08-15):** Dieses Dokument sprach ursprünglich
+> von „Wertungssystemen". Das war missverständlich, weil im Bogensport zwei
+> verschiedene Dinge so heißen: **wie aus einem Treffer Punkte werden** (dieses
+> Dokument) und **wer mit wem gewertet wird**, also die Klasseneinteilung
+> (→ BHS-008). Die deutsche Bezeichnung hier ist deshalb **Punkteschema** —
+> das ist auch der Begriff, den die Bowhuman-Oberflächen seit jeher verwenden
+> („Scoring-Modus", „Punkteschema"). Der Bezeichner `bhs-scoring-system`,
+> das JSON Schema und alle Beispieldateien bleiben unverändert; es handelt
+> sich um eine reine Klarstellung im Fließtext.
+
+BHS-002 (Session Export Format) verweist bereits auf ein `systemId`-Feld (z.B. `"IFAA_3"`), hat aber nie definiert, was die vollständige Liste gültiger IDs ist und wo ihre Punktetabellen herkommen (§5.2, offener Punkt). BHS-004 schließt diese Lücke: Es macht Punkteschemata zu eigenständigen, zitierfähigen, versionierten Datenobjekten statt zu hartcodierten Konstanten in einer App.
 
 **Warum das nötig ist — der zentrale Befund der Recherche:**
 
-Es gibt **keinen** existierenden offenen Metadatenstandard für Bogensport-Wertungssysteme (weder als JSON Schema noch sonst). Jeder Verband (IFAA, DFBV, ASA, IBO, World Archery) veröffentlicht seine Punktetabellen nur als Fließtext in PDF-Reglements. Digitale Scoring-Apps (3D Score Buddy, 3D Skill Board, Schiesszettel) bilden diese Systeme intern nach, aber jede mit eigenem, undokumentiertem internen Format.
+Es gibt **keinen** existierenden offenen Metadatenstandard für Bogensport-Punkteschemata (weder als JSON Schema noch sonst). Jeder Verband (IFAA, DFBV, ASA, IBO, World Archery) veröffentlicht seine Punktetabellen nur als Fließtext in PDF-Reglements. Digitale Scoring-Apps (3D Score Buddy, 3D Skill Board, Schiesszettel) bilden diese Systeme intern nach, aber jede mit eigenem, undokumentiertem internen Format.
 
 Das führt in der Praxis zu **Namenskollisionen**: Gleiche Bezeichnung, unterschiedliche Zahlen — oder umgekehrt. Konkreter Beleg aus dieser Recherche: Robins aktuelle `IFAA_3`-Konstante (`kill: 20/14/8`, `wound: 16/10/4`) entspricht **nicht** der IFAA/DFBV-Standardwertung (`vital: 20/16/12`, `wound: 18/14/10`, zzgl. eigener Kill-Zone), sondern der sogenannten **Skandinavischen Wertung** — einem anderen, eigenständigen System (siehe §6.1 und §8). Das ist keine böswillige Verwechslung, sondern genau das Symptom, das ein offener Metadatenstandard mit Pflicht-Quellenangabe verhindern soll.
 
@@ -51,7 +61,7 @@ BHS-004 beschreibt **ausschließlich**, wie ein Treffer in einen Punktwert über
 
 ## 2. Kernmodell
 
-Die zentrale Erkenntnis aus dem Vergleich aller recherchierten Systeme (§7): Jedes Wertungssystem lässt sich auf eine **Matrix aus Zone × Pfeilposition → Punktwert** reduzieren — unabhängig davon, ob die Pfeilposition einen physischen Pflockwechsel bedeutet (Walk-up-Hunter-Runde) oder einen wiederholten Schuss vom selben Pflock (IFAA-Runde). Aus Wertungssicht ist das identisch.
+Die zentrale Erkenntnis aus dem Vergleich aller recherchierten Systeme (§7): Jedes Punkteschema lässt sich auf eine **Matrix aus Zone × Pfeilposition → Punktwert** reduzieren — unabhängig davon, ob die Pfeilposition einen physischen Pflockwechsel bedeutet (Walk-up-Hunter-Runde) oder einen wiederholten Schuss vom selben Pflock (IFAA-Runde). Aus Wertungssicht ist das identisch.
 
 ### 2.1 Wurzelobjekt
 
@@ -188,7 +198,7 @@ interface TieBreakRule {
 }
 ```
 
-**Scoping-Klarstellung (2026-07-08):** `ScoringSystem.tie_break` bildet ausschließlich das **Standardverfahren des jeweiligen Verbands für seine eigenen offiziellen Wettkämpfe** ab (z.B. World Archerys Stechen-Regeln aus Book 4, Art. 22.3.2.1, oder DFBVs "meiste Kills"). Es ist **nicht bindend** für andere Turniere, die dasselbe Wertungssystem verwenden — ein Vereinsturnier mit der DFBV-Drei-Pfeil-Runde kann ein eigenes, abweichendes Stechen-Verfahren festlegen, ohne dass das ein Verstoß gegen dieses System wäre. Konzeptionell gehört Tie-Break eigentlich zur Turnierebene (mehrere Athleten, ein Wettkampfformat), nicht zur Zone×Pfeilposition-Übersetzung, die den Kern von BHS-004 ausmacht (§1). Das Feld bleibt hier aus pragmatischen Gründen erhalten, weil es bereits mit echten, quellenbelegten Daten befüllt ist (siehe `dfbv-3pfeil-2024.json`, `wa-3d.json`) — bei einem künftigen Tournament-Format-Dokument (Arbeitstitel BHS-006) sollte es fachlich dorthin wandern, mit Verweis von hier aus (analog zum `GpsPoint`-Muster zwischen BHS-001 und BHS-003).
+**Scoping-Klarstellung (2026-07-08):** `ScoringSystem.tie_break` bildet ausschließlich das **Standardverfahren des jeweiligen Verbands für seine eigenen offiziellen Wettkämpfe** ab (z.B. World Archerys Stechen-Regeln aus Book 4, Art. 22.3.2.1, oder DFBVs "meiste Kills"). Es ist **nicht bindend** für andere Turniere, die dasselbe Punkteschema verwenden — ein Vereinsturnier mit der DFBV-Drei-Pfeil-Runde kann ein eigenes, abweichendes Stechen-Verfahren festlegen, ohne dass das ein Verstoß gegen dieses System wäre. Konzeptionell gehört Tie-Break eigentlich zur Turnierebene (mehrere Athleten, ein Wettkampfformat), nicht zur Zone×Pfeilposition-Übersetzung, die den Kern von BHS-004 ausmacht (§1). Das Feld bleibt hier aus pragmatischen Gründen erhalten, weil es bereits mit echten, quellenbelegten Daten befüllt ist (siehe `dfbv-3pfeil-2024.json`, `wa-3d.json`) — bei einem künftigen Tournament-Format-Dokument (Arbeitstitel BHS-006) sollte es fachlich dorthin wandern, mit Verweis von hier aus (analog zum `GpsPoint`-Muster zwischen BHS-001 und BHS-003).
 
 ---
 
@@ -293,7 +303,7 @@ Zeigt `arrow_rule: "fixed_count_all_scored"` — beide Pfeile zählen, keine Abw
 
 ## 5. Registry-Konzept
 
-Statt Wertungssysteme in jeder App hart zu kodieren, schlägt BHS-004 eine **offene Registry** vor: eine Sammlung von `bhs-scoring-system`-Dateien in [`examples/scoring-systems/`](../examples/scoring-systems/) dieses Repositories, jede validierbar gegen [`schemas/scoring-system-v1.schema.json`](../schemas/scoring-system-v1.schema.json).
+Statt Punkteschemata in jeder App hart zu kodieren, schlägt BHS-004 eine **offene Registry** vor: eine Sammlung von `bhs-scoring-system`-Dateien in [`examples/scoring-systems/`](../examples/scoring-systems/) dieses Repositories, jede validierbar gegen [`schemas/scoring-system-v1.schema.json`](../schemas/scoring-system-v1.schema.json).
 
 Apps können:
 
@@ -331,7 +341,7 @@ BHS-002 §5.2 listet `systemId`-Werte (`"IFAA_1"`, `"IFAA_3"`, `"ASA"`) ohne Her
 
 ---
 
-## 7. Recherche: Existierende Wertungssysteme (Überblick)
+## 7. Recherche: Existierende Punkteschemata (Überblick)
 
 Diese Tabelle fasst die während der Recherche gefundenen Systeme zusammen. Sie ist **kein** Ersatz für die maschinenlesbaren Einträge in §5, sondern die menschenlesbare Zusammenfassung, aus der die ersten Registry-Einträge abgeleitet wurden.
 
