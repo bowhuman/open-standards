@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/class-system-v1.schema.json",
+  "title": "BHS-008 Class System v1",
+  "description": "Bowhuman Standard BHS-008: Wertungssystem — wer wird mit wem gewertet und von welchem Pflock. NICHT die Punktevergabe, die regelt BHS-004 (bhs-scoring-system). Enthaelt Regeln, keine Personendaten (siehe Spec §1.3).",
+  "type": "object",
+  "required": ["__type", "__version", "id", "name", "bogenklassen", "schichten"],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-class-system" },
+    "__version": { "type": "integer", "const": 1 },
+
+    "id":   { "type": "string", "minLength": 1, "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "name": { "type": "string", "minLength": 1 },
+
+    "verband":   { "type": "string", "minLength": 1,
+      "description": "Herausgebender Verband, siehe BHS-003 §3.10. Fehlt bei turniereigenen Systemen." },
+    "disziplin": { "type": "string", "minLength": 1,
+      "description": "Disziplin, siehe BHS-003 §3.13. Beispiel: 3D, Feld, Halle." },
+
+    "based_on": {
+      "type": ["string", "null"],
+      "description": "Basissystem, dessen nicht ueberschriebene Felder uebernommen werden. Schichten werden schichtweise zusammengefuehrt, siehe Spec §4."
+    },
+
+    "bogen_trennt_klassen": {
+      "type": "boolean",
+      "default": true,
+      "description": "true = jede Bogenart hat eigene Klassen (DSB). false = alle Bogenarten einer Altersgruppe werden gemeinsam gewertet, die Bogenart bestimmt nur den Pflock (DBSV)."
+    },
+
+    "quellen": {
+      "type": "array",
+      "description": "Belege fuer die Regeln. Ein Wertungssystem ohne Quellenangabe ist fuer einen Wettkampf nicht brauchbar, siehe Spec §2.8.",
+      "items": {
+        "type": "object",
+        "required": ["titel"],
+        "additionalProperties": true,
+        "properties": {
+          "titel":  { "type": "string", "minLength": 1 },
+          "url":    { "type": ["string", "null"], "format": "uri" },
+          "belegt": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "bogenklassen": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["key", "label"],
+        "additionalProperties": true,
+        "properties": {
+          "key":          { "type": "string", "minLength": 1 },
+          "label":        { "type": "string", "minLength": 1 },
+          "peg":          { "type": ["string", "null"] },
+          "distanz":      { "type": ["string", "null"] },
+          "disziplin_nr": { "type": ["string", "null"] },
+          "beschreibung": { "type": ["string", "null"],
+            "description": "Was faellt unter diese Bogenart. Bei offenen Turnieren das Einzige, woran ein Teilnehmer erkennt, ob sein Bogen dazugehoert." },
+          "eigen":        { "type": "boolean",
+            "description": "true = vom Veranstalter angelegt, nicht aus einem Regelwerk." }
+        }
+      }
+    },
+
+    "pflockfarben": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "farbe":       { "type": "string" },
+          "label":       { "type": "string" },
+          "reihenfolge": { "type": "integer",
+            "description": "Aufsteigende Distanz, naechster Pflock zuerst. Oberflaechen zeigen sie in dieser Reihenfolge." }
+        }
+      }
+    },
+
+    "schichten": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Benannte Schichten. Bekannt sind wertungsklasse, altersgruppe, pflockgruppe; weitere sind zulaessig und werden von Anwendungen ignoriert, die sie nicht kennen.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label"],
+        "additionalProperties": true,
+        "properties": {
+          "label":         { "type": "string", "minLength": 1 },
+          "beschreibung":  { "type": "string" },
+          "vollstaendig":  { "type": "boolean",
+            "description": "true = deckt jeden Jahrgang ab, muss lueckenlos und ueberschneidungsfrei sein." },
+          "verwendet_in":  { "type": "array", "items": { "type": "string" } },
+          "leer_label":    { "type": "string",
+            "description": "Text, wenn keine Regel passt. Kein Fehler, sondern die Aussage: fuer diese Kombination ist keine Klasse ausgeschrieben." },
+          "leer_hinweis":  { "type": "string" },
+          "abgeleitet_aus": { "type": "string",
+            "description": "Schicht ohne eigene Regeln; liest ein Feld der Bogenklasse, z.B. bogenklassen.peg." },
+          "bogen_trennt_klassen": { "type": "boolean",
+            "description": "Gehoert die Bogenart zur Klassen-Identitaet? true = \"Langbogen Herren\" (DSB). Ueberschreibt die Angabe auf oberster Ebene." },
+          "ignoriert_bogenklasse": { "type": "boolean",
+            "description": "Filtern die Regeln ueberhaupt nach Bogenart? false/fehlt = ja. true = nein, die Bogenart spielt fuer die Zuordnung keine Rolle (DBSV: dort trennt nur der Pflock)." },
+          "gleich_wie": { "type": "string",
+            "description": "Diese Schicht uebernimmt die Regeln einer anderen Schicht desselben Systems. Beim DBSV sind Alters- und Wertungsklasse identisch." },
+
+          "regeln": {
+            "type": "array",
+            "description": "Geordnet. Die erste passende Regel gewinnt, deshalb stehen spezielle vor allgemeinen.",
+            "items": {
+              "type": "object",
+              "required": ["key", "label", "bows"],
+              "additionalProperties": true,
+              "properties": {
+                "key":     { "type": "string", "minLength": 1 },
+                "label":   { "type": "string", "minLength": 1 },
+                "bows":    { "type": "array", "minItems": 1, "items": { "type": "string" },
+                  "description": "Bogenklassen-Keys, oder [\"*\"] fuer alle." },
+                "gender":  { "type": "string", "enum": ["m", "w", "d"],
+                  "description": "Fehlt = gilt fuer alle Geschlechter." },
+                "age_min": { "type": "integer", "minimum": 0, "maximum": 130 },
+                "age_max": { "type": "integer", "minimum": 0, "maximum": 130 },
+                "peg":     { "type": ["string", "null"],
+                  "description": "Ueberschreibt den Pflock der Bogenart." },
+                "klassen_nr": {
+                  "type": "object",
+                  "description": "Klassennummern des Verbands je Geschlecht, rein informativ.",
+                  "additionalProperties": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "anyOf": [
+          { "required": ["regeln"] },
+          { "required": ["abgeleitet_aus"] },
+          { "required": ["gleich_wie"] }
+        ]
+      }
+    }
+  }
+}

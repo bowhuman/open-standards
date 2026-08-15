@@ -1,0 +1,80 @@
+{
+  "__type": "bhs-class-system",
+  "__version": 1,
+
+  "id": "dbsv-3d",
+  "name": "DBSV · 3D",
+  "verband": "DBSV",
+  "disziplin": "3D",
+
+  "_hinweis": [
+    "QUELLDATEI — hier wird das Regelwerk gepflegt, nirgends sonst.",
+    "Anders als beim DSB bestimmt die Bogenart hier NICHT die Wertungsklasse, sondern nur die Pflockfarbe.",
+    "Alle Bogenarten starten in derselben Alters-/Geschlechtsklasse. Das ist Absicht des Regelwerks, kein Fehler im Modell."
+  ],
+  "quellen": [
+    {
+      "titel": "Interne Übernahme aus der bisherigen BOWHUMAN-Implementierung (age-classes.js, DBSV_CLASSES)",
+      "url": null,
+      "belegt": ["Altersbänder und Pflockfarben"],
+      "_offen": "Noch nicht gegen eine DBSV-Primärquelle geprüft — im Gegensatz zum DSB-System, das auf der TK-Mitteilung 3/2021 fußt. Vor produktivem Einsatz bei einem DBSV-Turnier verifizieren."
+    }
+  ],
+
+  "bogenklassen": [
+    { "key": "Recurve",       "label": "Recurve",       "peg": "rot" },
+    { "key": "Compound",      "label": "Compound",      "peg": "rot" },
+    { "key": "Blankbogen",    "label": "Blankbogen",    "peg": "gelb" },
+    { "key": "Langbogen",     "label": "Langbogen",     "peg": "blau" },
+    { "key": "Instinktiv",    "label": "Instinktivbogen", "peg": "blau" },
+    { "key": "Primitivbogen", "label": "Primitivbogen", "peg": "weiss" }
+  ],
+
+  "pflockfarben": {
+    "rot":   { "farbe": "#D32F2F", "label": "Roter Pflock" },
+    "gelb":  { "farbe": "#F9A825", "label": "Gelber Pflock" },
+    "blau":  { "farbe": "#1565C0", "label": "Blauer Pflock" },
+    "weiss": { "farbe": "#FAFAFA", "label": "Weißer Pflock", "rand": true }
+  },
+
+  "schichten": {
+    "wertungsklasse": {
+      "label": "Wertungsklasse",
+      "beschreibung": "Beim DBSV rein alters- und geschlechtsbasiert. Die Bogenart trennt über Pflock und Distanz, nicht über die Wertung.",
+      "vollstaendig": true,
+      "ignoriert_bogenklasse": true,
+      "verwendet_in": ["Nottingham: Ranking, Urkunden, Startlisten"],
+      "regeln": [
+        { "key": "u10",       "label": "U10",        "bows": ["*"], "age_max": 10 },
+        { "key": "u12",       "label": "U12",        "bows": ["*"], "age_min": 11, "age_max": 12 },
+        { "key": "u15",       "label": "U15",        "bows": ["*"], "age_min": 13, "age_max": 15 },
+        { "key": "u18-m",     "label": "U18 m",      "bows": ["*"], "gender": "m", "age_min": 16, "age_max": 18 },
+        { "key": "u18-w",     "label": "U18 w",      "bows": ["*"], "gender": "w", "age_min": 16, "age_max": 18 },
+        { "key": "u21-m",     "label": "U21 m",      "bows": ["*"], "gender": "m", "age_min": 19, "age_max": 21 },
+        { "key": "u21-w",     "label": "U21 w",      "bows": ["*"], "gender": "w", "age_min": 19, "age_max": 21 },
+        { "key": "herren",    "label": "Herren",     "bows": ["*"], "gender": "m", "age_min": 22, "age_max": 50 },
+        { "key": "damen",     "label": "Damen",      "bows": ["*"], "gender": "w", "age_min": 22, "age_max": 50 },
+        { "key": "herren-50", "label": "Herren Ü50", "bows": ["*"], "gender": "m", "age_min": 51, "age_max": 65 },
+        { "key": "damen-50",  "label": "Damen Ü50",  "bows": ["*"], "gender": "w", "age_min": 51, "age_max": 65 },
+        { "key": "herren-65", "label": "Herren Ü65", "bows": ["*"], "gender": "m", "age_min": 66 },
+        { "key": "damen-65",  "label": "Damen Ü65",  "bows": ["*"], "gender": "w", "age_min": 66 }
+      ]
+    },
+
+    "altersgruppe": {
+      "label": "Altersgruppe",
+      "beschreibung": "Beim DBSV identisch mit der Wertungsklasse — die Klassen sind ohnehin lückenlos und rein altersbasiert.",
+      "vollstaendig": true,
+      "gleich_wie": "wertungsklasse",
+      "verwendet_in": ["Verein: Mitgliederliste, Jugendarbeit", "Profil-Anzeige"]
+    },
+
+    "pflockgruppe": {
+      "label": "Pflock",
+      "beschreibung": "Distanzgruppe am Parcours, hängt nur an der Bogenart.",
+      "vollstaendig": true,
+      "abgeleitet_aus": "bogenklassen.peg",
+      "verwendet_in": ["Startlisten", "Ergebnisliste", "Parcours-Aushang"]
+    }
+  }
+}

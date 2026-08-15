@@ -1,0 +1,105 @@
+{
+  "__type": "bhs-class-system",
+  "__version": 1,
+
+  "id": "dsb-3d",
+  "name": "DSB · 3D",
+  "verband": "DSB",
+  "disziplin": "3D",
+
+  "_hinweis": [
+    "QUELLDATEI — hier wird das Regelwerk gepflegt, nirgends sonst.",
+    "classes-3d.js ist nur der Resolver; SQL-Seed und Anzeige leiten sich hieraus ab.",
+    "Schichten sind bewusst offen: weitere lassen sich ergänzen, ohne den Resolver zu ändern."
+  ],
+  "quellen": [
+    {
+      "titel": "TK-Mitteilung 3/2021, DSB Technische Kommission Bogen (08.11.2021), gültig ab Sportjahr 2022",
+      "url": "https://www.dsb.de/fileadmin/DSB.DE/PDF/PDF_2021/tk_bogen_10.11.2021.pdf",
+      "belegt": [
+        "Die 3D-Klassenliste: Blankbogen Jugend m+w, Blankbogen/Compound/Langbogen/Traditioneller Bogen Masters m",
+        "\"Es gibt also nur noch die vorstehend aufgeführten Klassen + in allen Bogenarten Herren und Damen.\"",
+        "Klasse Instinktivbogen abgeschafft, ersetzt durch Traditioneller Bogen"
+      ]
+    },
+    {
+      "titel": "DSB Wettkampfmodus WA 3D",
+      "url": "https://www.dsb.de/bogensport/sport/wettkampfformate/modus-3d",
+      "belegt": ["Bogenarten, Pflockfarben und Distanzen"]
+    },
+    {
+      "titel": "Tabelle Wettbewerbe/Klassen Bogen 2026, DSB Regelteil 6 (Sportjahr 2026–2028)",
+      "url": "https://www.dsb.de/fileadmin/DSB.DE/PDF/PDF_2026/Tabelle_Wettbewerbe_Klassen_Bogen_2026.pdf",
+      "belegt": [
+        "Altersbänder und Klassennummern der allgemeinen Klassentabelle (Grundlage der Schicht 'altersgruppe')",
+        "Block 'DM Bogen 3D': Recurve 6.60 = nur Herren/Damen · Compound 6.65, Langbogen 6.67, Traditionell 6.68 = zusätzlich Master m · Blankbogen 6.66 = zusätzlich Jugend m (w startet mit, 'b 30') und Master m",
+        "Legende: weißes Feld mit E = ausgeschriebene Klasse · GRÜN = mögliche Teilnahme in leistungsstärkerer Klasse · ROT = nicht zugelassen",
+        "Daraus die Altersuntergrenze: Schüler A (13–14) und Schüler B (11–12) sind im 3D ROT, also nicht zugelassen. Ab Jugend (15) ist die Teilnahme grün — in der nächsthöheren ausgeschriebenen Klasse."
+      ]
+    }
+  ],
+
+  "bogenklassen": [
+    { "key": "Recurve",       "label": "Recurve",              "disziplin_nr": "6.60", "peg": "rot",  "distanz": "10–45 m" },
+    { "key": "Compound",      "label": "Compound",             "disziplin_nr": "6.65", "peg": "rot",  "distanz": "10–45 m" },
+    { "key": "Blankbogen",    "label": "Blankbogen",           "disziplin_nr": "6.66", "peg": "blau", "distanz": "5–30 m" },
+    { "key": "Langbogen",     "label": "Langbogen",            "disziplin_nr": "6.67", "peg": "blau", "distanz": "5–30 m" },
+    { "key": "Instinktiv",    "label": "Traditioneller Bogen", "disziplin_nr": "6.68", "peg": "blau", "distanz": "5–30 m" },
+    { "key": "Primitivbogen", "label": "Primitivbogen",        "disziplin_nr": null,   "peg": "blau", "distanz": "5–30 m",
+      "hinweis": "Im DSB-3D nicht eigenständig ausgeschrieben. Folgt hier dem Traditionellen Bogen; die verbindliche Zuordnung regelt die Turnier-Ausschreibung." }
+  ],
+
+  "pflockfarben": {
+    "rot":  { "farbe": "#D32F2F", "label": "Roter Pflock" },
+    "blau": { "farbe": "#1565C0", "label": "Blauer Pflock" }
+  },
+
+  "schichten": {
+    "wertungsklasse": {
+      "label": "Wertungsklasse",
+      "beschreibung": "In welcher Klasse wird beim Turnier gewertet. Im DSB-3D sehr wenige Klassen: keine Schüler (nicht zugelassen), keine eigenen Jugend-/Junioren-/Seniorenklassen (starten in Herren/Damen mit), Masters nur männlich und nicht für Recurve.",
+      "vollstaendig": false,
+      "leer_label": "im DSB-3D nicht zugelassen",
+      "leer_hinweis": "Schüler A (13–14) und Schüler B (11–12) sind im 3D nicht startberechtigt (Tabelle 2026, rot markiert). Ab 15 Jahren ist die Teilnahme möglich. Für ein Vereinsturnier kann die Ausschreibung eigene Klassen vorsehen.",
+      "verwendet_in": ["Nottingham: Ranking, Urkunden, Startlisten"],
+      "regeln": [
+        { "key": "bb-jugend", "label": "Jugend",  "bows": ["Blankbogen"], "age_min": 15, "age_max": 17,
+          "_beleg": "TK 3/2021: einzige Jugendklasse im 3D, m+w gemeinsam" },
+        { "key": "masters-m", "label": "Masters", "bows": ["Compound", "Blankbogen", "Langbogen", "Instinktiv", "Primitivbogen"], "gender": "m", "age_min": 50,
+          "_beleg": "TK 3/2021: Masters nur männlich, Recurve ausgenommen",
+          "_annahme": "Altersgrenze 50 aus der allgemeinen DSB-Tabelle — die TK-Mitteilung beziffert sie nicht" },
+        { "key": "herren",    "label": "Herren",  "bows": ["*"], "gender": "m", "age_min": 15,
+          "_beleg": "Ab 15 grün in der Tabelle 2026 = Teilnahme in der leistungsstärkeren Klasse. Jugend und Junioren haben im 3D keine eigene Wertung (Ausnahme Blankbogen Jugend), starten also hier mit." },
+        { "key": "damen",     "label": "Damen",   "bows": ["*"], "gender": "w", "age_min": 15,
+          "_beleg": "Siehe Herren. Master w und Senioren w sind im 3D nicht ausgeschrieben und starten ebenfalls hier." }
+      ]
+    },
+
+    "altersgruppe": {
+      "label": "Altersgruppe",
+      "beschreibung": "Zu welcher Altersgruppe eine Person gehört — unabhängig davon, ob dafür eine Wettkampfklasse ausgeschrieben ist. Lückenlos, damit Mitgliederlisten und Jugendarbeit damit arbeiten können.",
+      "vollstaendig": true,
+      "verwendet_in": ["Verein: Mitgliederliste, Jugendarbeit, Training", "Profil-Anzeige", "Dashboard"],
+      "regeln": [
+        { "key": "kinder",    "label": "Kinder",     "bows": ["*"], "age_max": 10,
+          "_annahme": "Keine DSB-Klasse — die Wettkampftabelle beginnt bei 11. Rein administrative Gruppe für die Vereinsverwaltung." },
+        { "key": "schueler-b", "label": "Schüler B", "bows": ["*"], "age_min": 11, "age_max": 12, "klassen_nr": { "m": 22, "w": 23 } },
+        { "key": "schueler-a", "label": "Schüler A", "bows": ["*"], "age_min": 13, "age_max": 14, "klassen_nr": { "m": 20, "w": 21 } },
+        { "key": "jugend",     "label": "Jugend",    "bows": ["*"], "age_min": 15, "age_max": 17, "klassen_nr": { "m": 30, "w": 31 } },
+        { "key": "junioren",   "label": "Junioren",  "bows": ["*"], "age_min": 18, "age_max": 20, "klassen_nr": { "m": 40, "w": 41 } },
+        { "key": "herren",     "label": "Herren",    "bows": ["*"], "gender": "m", "age_min": 21, "age_max": 49, "klassen_nr": { "m": 10 } },
+        { "key": "damen",      "label": "Damen",     "bows": ["*"], "gender": "w", "age_min": 21, "age_max": 49, "klassen_nr": { "w": 11 } },
+        { "key": "master",     "label": "Master",    "bows": ["*"], "age_min": 50, "age_max": 65, "klassen_nr": { "m": 12, "w": 13 } },
+        { "key": "senioren",   "label": "Senioren",  "bows": ["*"], "age_min": 66, "klassen_nr": { "m": 14, "w": 15 } }
+      ]
+    },
+
+    "pflockgruppe": {
+      "label": "Pflock",
+      "beschreibung": "Distanzgruppe am Parcours. Hängt nur an der Bogenart, nicht am Alter — deshalb ohne eigene Regeln, abgeleitet aus bogenklassen[].peg.",
+      "vollstaendig": true,
+      "abgeleitet_aus": "bogenklassen.peg",
+      "verwendet_in": ["Startlisten", "Ergebnisliste", "Parcours-Aushang"]
+    }
+  }
+}

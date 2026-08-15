@@ -41,6 +41,7 @@ Bevor du ein Issue öffnest: Durchsuche die offenen und geschlossenen Issues. De
 | `bhs-005` | Betrifft Equipment Metadata |
 | `bhs-006` | Betrifft Tournament Metadata |
 | `bhs-007` | Betrifft Archer Metadata |
+| `bhs-008` | Betrifft Class System Metadata |
 | `new-feature` | Vorschlag für neues Feld / neues Dokument |
 | `question` | Frage ohne Änderungswunsch |
 

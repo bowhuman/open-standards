@@ -23,6 +23,7 @@ bowhuman bleibt Maintainer dieser Standards und Referenz-Implementierung. Die Sp
 | BHS-005 | Equipment Metadata | DRAFT | [specs/BHS-005-equipment-metadata.md](specs/BHS-005-equipment-metadata.md) |
 | BHS-006 | Tournament Metadata | DRAFT | [specs/BHS-006-tournament-metadata.md](specs/BHS-006-tournament-metadata.md) |
 | BHS-007 | Archer Metadata | DRAFT | [specs/BHS-007-archer-metadata.md](specs/BHS-007-archer-metadata.md) |
+| BHS-008 | Class System Metadata | DRAFT | [specs/BHS-008-class-system-metadata.md](specs/BHS-008-class-system-metadata.md) |
 
 **BHS** = Bowhuman Standard
 
@@ -137,6 +138,27 @@ Metadatenformat für Schützen: Identität (Vor-/Nachname), Eligibility-Klassifi
 ```
 
 → [Vollständige Spec](specs/BHS-007-archer-metadata.md) · [JSON Schema](schemas/archer-v1.schema.json) · [Beispiele](examples/archers/)
+
+### BHS-008 — Class System Metadata *(Draft)*
+
+Metadatenformat für **Wertungssysteme**: wer wird mit wem gewertet und von welchem Pflock. Nicht zu verwechseln mit BHS-004, das die Punktevergabe regelt — im Deutschen heißen beide „Wertung", sie haben aber verschiedene Gegenstände. Ein Wertungssystem besteht aus Schichten (Wettkampfklasse, Altersgruppe, Pflockgruppe), weil eine einzige Klassenliste Wettkampf und Vereinsverwaltung nicht gleichzeitig richtig abbilden kann: Im DSB-3D gibt es keine Schülerklasse, ein Verein braucht die Gruppe für seine Jugendarbeit trotzdem.
+
+```json
+{
+  "__type": "bhs-class-system",
+  "id": "dsb-3d",
+  "name": "DSB · 3D",
+  "bogenklassen": [{ "key": "Langbogen", "label": "Langbogen", "peg": "blau" }],
+  "schichten": {
+    "wertungsklasse": {
+      "label": "Wertungsklasse",
+      "regeln": [{ "key": "herren", "label": "Herren", "bows": ["*"], "gender": "m", "age_min": 15 }]
+    }
+  }
+}
+```
+
+→ [Vollständige Spec](specs/BHS-008-class-system-metadata.md) · [JSON Schema](schemas/class-system-v1.schema.json) · [Beispiele](examples/class-systems/)
 
 ---
 

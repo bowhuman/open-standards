@@ -35,6 +35,7 @@ const TYPE_TO_SCHEMA = {
   'bhs-equipment-set':   'equipment-set-v1.schema.json',
   'bhs-tournament':      'tournament-v1.schema.json',
   'bhs-archer':          'archer-v1.schema.json',
+  'bhs-class-system':    'class-system-v1.schema.json',
 };
 
 function walk(dir) {
