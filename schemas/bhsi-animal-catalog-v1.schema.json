@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/bhsi-animal-catalog-v1.schema.json",
+  "title": "BHSi-001 Operator Animal Catalog Product v1",
+  "description": "Bowhuman interne Erweiterung BHSi-001: 3D-Tier-Katalogprodukt (Betreiber-spezifisch, kein öffentlicher Standard)",
+  "type": "object",
+  "required": ["__type", "__version", "id", "manufacturer", "product_name", "match_status", "category", "source_url", "scraped_at"],
+  "additionalProperties": true,
+  "properties": {
+    "__type": {
+      "type": "string",
+      "const": "bhsi-animal-catalog-product",
+      "description": "Format-Marker, konstant 'bhsi-animal-catalog-product'"
+    },
+    "__version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema-Version, aktuell 1"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID v4"
+    },
+    "manufacturer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Hersteller, z.B. 'Leitold'"
+    },
+    "product_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Produktbezeichnung lt. Katalog, z.B. 'Leitold 3D Tier Timberwolf laufend'"
+    },
+    "animal_species_de": {
+      "type": ["string", "null"],
+      "description": "Muss einem 'animal_de'-Wert aus Zoo/animal-lore.json entsprechen, oder null bei match_status 'needs_review'"
+    },
+    "match_status": {
+      "type": "string",
+      "enum": ["matched", "needs_review"],
+      "description": "Ob animal_species_de erfolgreich auf die bestehende Zoo-Registry gemappt wurde"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["xl", "large", "medium", "small"],
+      "description": "BHS-001-kompatible Kernklasse (Zielgröße)"
+    },
+    "ifaa_group": {
+      "type": ["string", "null"],
+      "description": "Offizielle IFAA-Gruppe lt. Hersteller, z.B. 'Gruppe 2'"
+    },
+    "wa_group": {
+      "type": ["string", "null"],
+      "description": "Offizielle WA-Gruppe lt. Hersteller, z.B. 'Gruppe 2'"
+    },
+    "scoring_zones_count": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "description": "Anzahl Wertungszonen"
+    },
+    "outer_kill_cm": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0,
+      "description": "Außenkill-Durchmesser in cm"
+    },
+    "dimensions_cm": {
+      "oneOf": [
+        { "$ref": "#/definitions/DimensionsCm" },
+        { "type": "null" }
+      ]
+    },
+    "weight_kg": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0
+    },
+    "reference_price_eur": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Katalog-Richtpreis zum Scrape-Zeitpunkt"
+    },
+    "product_image_url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "description": "Echtes Produktfoto — NICHT das Zoo-Design-Bild"
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Produktseite, von der gescraped wurde"
+    },
+    "scraped_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 Zeitpunkt des Scraper-Laufs"
+    }
+  },
+  "definitions": {
+    "DimensionsCm": {
+      "type": "object",
+      "required": ["length", "width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "length": { "type": "number", "exclusiveMinimum": 0 },
+        "width":  { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    }
+  }
+}

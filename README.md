@@ -162,6 +162,16 @@ Metadatenformat für **Wertungssysteme**: wer wird mit wem gewertet und von welc
 
 ---
 
+## Interne Erweiterungen (BHSi)
+
+Neben den öffentlichen `BHS-*`-Standards (oben) gibt es `BHSi-*`-Dokumente in [`internal/`](internal/) — **keine öffentlichen Standards**, sondern additive, Betreiber-spezifische Erweiterungen einzelner BHS-Kernformate, ohne Kompatibilitätsanspruch gegenüber Drittanbietern. Sie dürfen ein BHS-Pflichtfeld nie verändern oder ersetzen; Apps, die nur den öffentlichen Kern kennen, ignorieren BHSi-Felder gefahrlos.
+
+| Nummer | Titel | Status | Erweitert | Dokument |
+|---|---|---|---|---|
+| BHSi-001 | Operator Animal Catalog & Station Extension | DRAFT | BHS-001 (`Target`) | [internal/BHSi-001-operator-animal-catalog.md](internal/BHSi-001-operator-animal-catalog.md) |
+
+---
+
 ## Validierung
 
 ### Im Browser
