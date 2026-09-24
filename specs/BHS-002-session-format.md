@@ -154,8 +154,26 @@ interface Shot {
   score:         number;        // Punktzahl
   timestamp:     string;        // ISO-8601
   angle_deg:     number | null; // Neigungswinkel (von Parcours geerbt)
+  // Optional, nur wenn GPS in den Einstellungen an ist (ADR-006 Befund A,
+  // behoben 2026-09-24). Fehlt das Feld ganz, war GPS aus -- explizites
+  // `null` kommt in der Praxis nicht vor (Robin setzt die drei Felder nur
+  // per Objekt-Spread, wenn eine Position vorlag).
+  flock_gps?:           ShotGpsPoint | null; // Standort Schuetze beim Schuss
+  target_gps?:          ShotGpsPoint | null; // Standort Ziel (Fallback: flock_gps ohne Fix am Ziel)
+  measured_distance_m?: number | null;        // Haversine flock_gps -> target_gps, gerundet
+}
+
+interface ShotGpsPoint {
+  lat:       number;        // -90..90
+  lon:       number;        // -180..180
+  accuracy:  number;        // Meter, >= 0
+  altitude:  number | null; // Meter ueber Meeresspiegel
+  timestamp: number;        // Unix-Millisekunden (kein ISO-String -- anders als Shot.timestamp)
 }
 ```
+
+_Beleg: Feldnamen und Typen entsprechen `Websites/sherwood.bowhuman.eu/schemas/robin-session.js`
+(`GPS_POINT_SCHEMA`, `SHOT_SCHEMA`) -- der Server-Validierung, die jeden Upload tatsaechlich prueft._
 
 ### 5.1 Scoring-Zonen
 
@@ -376,7 +394,8 @@ Diese Punkte müssen vor dem Status STABLE geklärt werden:
 - [ ] Vollständige `systemId`-Liste mit Punktetabellen aller Systeme (§5.2)
 - [ ] JSON Schema für Validierung
 - [ ] Verhalten bei Mehrschützen-Sessions (`total_score` vs. `totals[]`)
-- [ ] Geplante Erweiterungen: `shot_gps`, `peg_chosen`, `animal_chosen` (für v2)
+- [x] `flock_gps`/`target_gps`/`measured_distance_m` (§5) -- umgesetzt 2026-09-24 (ADR-006 Befund A)
+- [ ] Geplante Erweiterungen: `peg_chosen`, `animal_chosen` (für v2)
 - [ ] Abgrenzung zum LittleJohn Session-Share (BHS-001 §4) — gleicher Dateimarker, andere Struktur
 - [ ] `equipment_set_snapshot` (§3, beschlossen 2026-07-08) in Robin implementieren — Spec ist fertig, Exporteur liefert das Feld noch nicht
 - [ ] Migrationspfad: Wann wird das deprecated `equipment`-Feld tatsächlich entfernt, falls überhaupt? Aktuell kein Zieldatum
@@ -390,3 +409,4 @@ Diese Punkte müssen vor dem Status STABLE geklärt werden:
 | 0.9 | 2026-06-25 | Initialer DRAFT |
 | 0.9 | 2026-07-08 | §5.2 verweist auf BHS-004 (Scoring System Metadata) als Antwort auf die offene `systemId`-Frage |
 | 0.9 | 2026-07-08 | §3: `Archer.equipment_set_snapshot` ergänzt (BHS-005-kompatibel), altes `equipment` als deprecated Fallback markiert, nicht entfernt. Noch nicht in Robin implementiert (§10). |
+| 0.9 | 2026-09-24 | §5: `Shot.flock_gps`/`target_gps`/`measured_distance_m` (optional, `ShotGpsPoint`) ergänzt -- Robin schreibt sie bereits bei eingeschaltetem GPS, Sherwoods Schema kannte sie bisher nicht (422). ADR-006 Befund A. |
