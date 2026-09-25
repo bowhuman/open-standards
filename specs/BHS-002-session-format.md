@@ -172,8 +172,7 @@ interface ShotGpsPoint {
 }
 ```
 
-_Beleg: Feldnamen und Typen entsprechen `Websites/sherwood.bowhuman.eu/schemas/robin-session.js`
-(`GPS_POINT_SCHEMA`, `SHOT_SCHEMA`) -- der Server-Validierung, die jeden Upload tatsaechlich prueft._
+_Beleg: `rg -c "^\s+flock_gps:" Websites/sherwood.bowhuman.eu/schemas/robin-session.js` → 1 · `rg -c "^\s+target_gps:" Websites/sherwood.bowhuman.eu/schemas/robin-session.js` → 1 · `rg -c "^\s+measured_distance_m:" Websites/sherwood.bowhuman.eu/schemas/robin-session.js` → 1 · geprüft 2026-09-24_
 
 ### 5.1 Scoring-Zonen
 
