@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://codeberg.org/bowhuman/open-standards/raw/branch/main/schemas/scene-feedback-v1.schema.json",
+  "title": "BHS-009 Scene Feedback v1",
+  "description": "Bowhuman Standard BHS-009: Rückmeldung eines Schützen zu einer einzelnen Parcours-Station (Szene). Laufzeitbezogen, kein Teil des Parcours-Formats (BHS-001). Wetter-Objekt ist BHS-002 SessionWeather, unveraendert uebernommen.",
+  "type": "object",
+  "required": ["__type", "__version", "id", "created_at", "rating", "parcours", "target", "anonymous", "status"],
+  "additionalProperties": true,
+  "properties": {
+    "__type":    { "type": "string", "const": "bhs-scene-feedback" },
+    "__version": { "type": "integer", "const": 1 },
+
+    "id":         { "type": "string", "format": "uuid" },
+    "created_at": { "type": "string", "format": "date-time" },
+
+    "rating": { "type": "string", "enum": ["gut", "schlecht"] },
+
+    "parcours": { "$ref": "#/definitions/ParcoursRef" },
+    "target":   { "$ref": "#/definitions/TargetRef" },
+
+    "text":      { "type": ["string", "null"] },
+    "photo_url": { "type": ["string", "null"], "format": "uri" },
+    "audio_url": { "type": ["string", "null"], "format": "uri" },
+
+    "transcript":        { "type": ["string", "null"] },
+    "transcript_status": { "type": ["string", "null"], "enum": ["pending", "done", "failed", null] },
+
+    "anonymous": { "type": "boolean", "default": true },
+
+    "weather": { "oneOf": [{ "$ref": "#/definitions/SessionWeather" }, { "type": "null" }] },
+
+    "status": { "type": "string", "enum": ["neu", "in_arbeit", "erledigt"], "default": "neu" }
+  },
+
+  "definitions": {
+    "GpsPoint": {
+      "type": "object",
+      "required": ["lat", "lon"],
+      "properties": {
+        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
+    "ParcoursRef": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "gps":  { "oneOf": [{ "$ref": "#/definitions/GpsPoint" }, { "type": "null" }] }
+      }
+    },
+    "TargetRef": {
+      "type": "object",
+      "required": ["number", "animal"],
+      "properties": {
+        "number": { "type": "integer", "minimum": 1 },
+        "animal": { "type": "string", "minLength": 1 }
+      }
+    },
+    "SessionWeather": {
+      "description": "Identisch zu BHS-002 SessionWeather (session-v1.schema.json) — hier dupliziert, da BHS-009 keine harte Schema-Abhaengigkeit zu BHS-002 eingeht.",
+      "type": "object",
+      "required": ["source", "fetched_at", "temperature_c", "wind_speed_kmh", "wind_dir_deg", "wind_dir_label", "weather_code", "condition", "precipitation_mm"],
+      "properties": {
+        "source":           { "type": "string", "const": "open-meteo" },
+        "fetched_at":       { "type": "string", "format": "date-time" },
+        "temperature_c":    { "type": "number" },
+        "wind_speed_kmh":   { "type": "number" },
+        "wind_dir_deg":     { "type": "number", "minimum": 0, "maximum": 359 },
+        "wind_dir_label":   { "type": "string", "enum": ["N", "NO", "O", "SO", "S", "SW", "W", "NW"] },
+        "weather_code":     { "type": "integer" },
+        "condition":        { "type": "string" },
+        "precipitation_mm": { "type": "number" },
+        "visibility_m":     { "type": ["number", "null"] }
+      }
+    }
+  }
+}

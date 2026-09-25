@@ -1,0 +1,28 @@
+{
+  "__type":    "bhs-scene-feedback",
+  "__version": 1,
+  "id":        "b6e1a1a0-4f2e-4b1a-9c3d-8a2f6e0d1234",
+  "created_at": "2026-09-24T14:32:00.000Z",
+  "rating":    "schlecht",
+  "parcours":  { "name": "Schaumberg D.K.", "gps": { "lat": 49.491, "lon": 7.034 } },
+  "target":    { "number": 7, "animal": "Wildschwein" },
+  "text":      "Der Ständer wackelt stark, könnte umfallen.",
+  "photo_url": null,
+  "audio_url": "https://sherwood.bowhuman.eu/uploads/feedback/b6e1a1a0/memo.webm",
+  "transcript": null,
+  "transcript_status": "pending",
+  "anonymous": true,
+  "weather": {
+    "source": "open-meteo",
+    "fetched_at": "2026-09-24T14:32:01.000Z",
+    "temperature_c": 14.2,
+    "wind_speed_kmh": 8,
+    "wind_dir_deg": 210,
+    "wind_dir_label": "SW",
+    "weather_code": 3,
+    "condition": "Overcast",
+    "precipitation_mm": 0,
+    "visibility_m": null
+  },
+  "status": "neu"
+}
