@@ -309,6 +309,18 @@ Die folgenden Features sind für eine zukünftige Version geplant und **nicht** 
 
 Bis zur Verabschiedung von v2 bleiben diese Felder undefiniert — Implementierungen sollten sie ignorieren wenn vorhanden.
 
+### Nachtrag 2026-10-08 — Raumbezug
+
+Ebenfalls für v2 vorgesehen (ergänzt am 2026-10-08):
+
+| Feature | Feld | Beschreibung |
+|---|---|---|
+| Strukturierte Adresse | `address` | Objekt, optional: `{ street?, postal_code, city, region?, country }` — strukturierte Anfahrts-Adresse auf Parcours-Ebene. `street` ist ausdrücklich optional: Waldparcours haben oft keine Straßenadresse. `country` als ISO-3166-1 alpha-2. `location` (Freitext) bleibt erhalten und rückwärtskompatibel — fehlendes `address` wird tolerant eingelesen, nach dem Muster aus 5.3. |
+| Parkplatz-Koordinate | `gps_parking` | `GpsPoint`, optional. Rollenklärung: Das bestehende Parcours-`gps` bezeichnet den **Treffpunkt/Startpunkt**, `gps_parking` den Parkplatz — Parkplatz ≠ erster Pflock ist mit dem heutigen einen Feld nicht ausdrückbar. |
+| Plus Code | `plus_code` | `string`, optional — ausdrücklich **abgeleitetes** Feld (Open Location Code, lokal aus `gps` berechenbar), nie Quelle der Wahrheit. |
+
+Der vorstehende Schlusssatz gilt unverändert auch für diese drei Felder.
+
 ---
 
 ## 7. JSON Schema
