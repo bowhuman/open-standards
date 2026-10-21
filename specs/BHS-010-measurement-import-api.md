@@ -5,13 +5,13 @@
 | Nummer | BHS-010 |
 | Titel | Measurement Import API (Import von Messwerten) |
 | Status | **DRAFT** |
-| Version | 0.9 |
+| Version | 0.9.1 |
 | Datum | 2026-10-21 |
 | Autor | bowhuman (Tuck-Team) |
 | Abhängig von | — (eigenständig; referenziert keinen anderen BHS-Typ) |
 | Verwandt | BHS-002 (Session Export — Schießdaten einer Runde; BHS-010 beschreibt Körper- und Belastungsmesswerte, nicht Schüsse) |
 
-> **DRAFT**: Erstvorschlag zur Diskussion, entstanden aus der Import-Schnittstelle der BOWHUMAN-Trainings-App (Tuck, Oktober 2026). Der Dienst ist produktiv, **eine externe Quelle hat bisher noch niemand angebunden**. Der Standard wird erst dann als STABLE verabschiedet, wenn mindestens eine echte Quelle (Uhr, Ring, App oder Export-Werkzeug) über diese Schnittstelle schreibt und die in §8 genannten offenen Punkte entschieden sind. Feldnamen, Grenzwerte und Fehlercodes können sich bis dahin ändern.
+> **DRAFT**: Erstvorschlag zur Diskussion, entstanden aus der Import-Schnittstelle der BOWHUMAN-Trainings-App (Tuck, Oktober 2026). Der Dienst ist produktiv, **eine externe Quelle hat bisher noch niemand angebunden**. Der Standard wird erst dann als STABLE verabschiedet, wenn mindestens eine echte Quelle (Uhr, Ring, App oder Export-Werkzeug) über diese Schnittstelle schreibt und die in §8.2 genannten offenen Punkte entschieden sind. Feldnamen, Grenzwerte und Fehlercodes können sich bis dahin ändern.
 
 ---
 
@@ -19,7 +19,7 @@
 
 Dieses Dokument beschreibt eine **HTTP-Schnittstelle**, über die eine Quelle (Sportuhr, Ring, Gesundheits-App, Tabellen-Export) Messwerte eines Schützen an einen Trainingsdienst sendet: Ruhepuls, Herzfrequenzvariabilität, Schlafdauer, Schritte, Belastungswerte des Anbieters. Es legt fest, wie sich eine Quelle ausweist (Token), wie der Anfragekörper aussieht, welche Regeln für die Felder gelten, wie Wiederholungen behandelt werden (Upsert über `external_id`) und was der Dienst antwortet.
 
-Anders als BHS-001 bis BHS-009 ist BHS-010 **kein Dateiformat**, sondern ein Vertrag zwischen Maschine und Dienst. Es gibt deshalb keinen `__type`-Marker im Körper und (noch) kein JSON Schema (§8).
+Anders als BHS-001 bis BHS-009 ist BHS-010 **kein Dateiformat**, sondern ein Vertrag zwischen Maschine und Dienst. Es gibt deshalb keinen `__type`-Marker im Körper und (noch) kein JSON Schema (§8.2).
 
 ## 1. Geltungsbereich
 
@@ -32,7 +32,7 @@ Die Felder sind so gewählt, dass eine verlustfreie Abbildung auf **Open mHealth
 ### 1.2 Was BHS-010 beschreibt
 
 - Das Token-Modell: Form, Bindung an eine Quelle, Lebenslauf (§3)
-- Den Endpunkt `POST /import`: Anfrage, Feldregeln, Alles-oder-nichts, Upsert, Antwort (§4)
+- Den Endpunkt `POST /import`: Anfrage, Feldregeln, Alles-oder-nichts, Upsert, Antwort, Negativliste und Einheitenregel (§4)
 - Die Fehlerantworten 400, 401, 413, 429 und ihre Reihenfolge (§5)
 - Die Feldkonvention zu Open mHealth (§6)
 - Ein empfohlenes Metrik-Vokabular mit UCUM-Einheiten (§7)
@@ -42,7 +42,7 @@ Die Felder sind so gewählt, dass eine verlustfreie Abbildung auf **Open mHealth
 | Was | Stattdessen |
 |---|---|
 | Wie der Schütze einen Token anlegt, auflistet oder widerruft | implementierungsspezifisch — der Dienst bietet dafür eine eigene, mit dem Konto des Schützen angemeldete Oberfläche oder API; BHS-010 legt nur fest, was ein Token **ist** (§3) |
-| Wie der Schütze oder andere Personen die importierten Werte lesen | implementierungsspezifisch; der Trainer-Lesepfad ist zudem noch nicht entschieden (§8) |
+| Wie der Schütze oder andere Personen die importierten Werte lesen | implementierungsspezifisch; wer in der BOWHUMAN-Implementierung liest und wie der Schütze einzelne Messgrößen freigibt, steht zur Information in §8.1 |
 | Ob und wie Messwerte in Belastungsrechnung, Regeln oder Punkte eingehen | Sache des Dienstes, nicht Teil des Austauschvertrags |
 | Anbindung an einen bestimmten Anbieter (Garmin, Polar, Apple Health, Oura …) | Aufgabe eines Brücken-Werkzeugs, das BHS-010 **konsumiert** |
 | Datenbankschema, Hash-Verfahren, Drossel-Technik | implementierungsspezifisch (analog BHS-006 §2.10, BHS-009 §1.3) |
@@ -139,7 +139,7 @@ Wurzel:
 | `period_end` | ISO-8601 | — | wie `measured_at`; nicht vor `measured_at`. Gesetzt für Zeitraum-Werte (Tagessumme, Schlafnacht), weggelassen für Zeitpunkt-Werte | `invalid_time`, `future`, `invalid_range` |
 | `metric` | `string` | ✅ | `^[a-z][a-z0-9_]{1,39}$`; nicht auf der Negativliste (§4.6) | `invalid_metric`, `metric_excluded` |
 | `value` | `number` | ✅ | endliche Zahl; wird auf 3 Nachkommastellen gerundet; Betrag < 1 000 000 000 | `invalid_value` |
-| `unit` | `string` | — | ≤ 20 Zeichen, als UCUM-Code (§7); leer = keine Einheit | `invalid_unit` |
+| `unit` | `string` | — | ≤ 20 Zeichen, als UCUM-Code (§7); leer = keine Einheit. Energieeinheiten (`kcal`, `kJ`) nur mit `active_energy`, und `active_energy` nur mit ihnen (§4.7) | `invalid_unit` |
 | `external_id` | `string` | — | 1–120 Zeichen; **je Aufruf eindeutig**; Schlüssel für den Upsert (§4.4) | `invalid_external_id` |
 | `source` | `string` | — | wie an der Wurzel: darf nur die Quelle des Tokens bestätigen | `source_mismatch` |
 | `payload` | `object` | — | Rohdaten der Quelle als Beleg; als JSON ≤ 2048 Bytes; wird nicht ausgewertet und nicht wieder ausgeliefert | `invalid_payload` |
@@ -177,15 +177,33 @@ Dieselbe `external_id` darf innerhalb **eines** Aufrufs nur einmal vorkommen (`i
 
 ### 4.6 Negativliste
 
-Der Dienst nimmt bestimmte Metriken grundsätzlich **nicht** an und antwortet mit 400 `metric_excluded`. Hintergrund ist eine inhaltliche Entscheidung des Trainingsdienstes: selbst gemeldete Energie**aufnahme** und Körpergewicht sollen in einer Trainings-App nicht landen, weil sie dort mehr schaden als nützen.
+Der Dienst nimmt bestimmte Metriken grundsätzlich **nicht** an und antwortet mit 400 `metric_excluded`. Hintergrund ist eine inhaltliche Entscheidung des Trainingsdienstes: selbst gemeldete Energie**aufnahme** sowie Körpergewicht und Körperzusammensetzung sollen in einer Trainings-App nicht landen, weil sie dort mehr schaden als nützen. Vom Gerät **gemessener Energieverbrauch** (`active_energy`, §7) ist dagegen eine Belastungsgröße, keine Selbstauskunft, und wird angenommen — mit der Einheitenregel aus §4.7.
 
-Derzeitige Negativliste (wörtlich, wird am Dienst geprüft):
+Negativliste (wörtlich, wird am Dienst geprüft):
 
 ```
-body_weight, weight, kcal, calories, energy_kcal, body_fat
+body_weight, weight, body_mass, bmi, body_fat,
+kcal, calories, energy_kcal, energy_intake, calories_in, intake_kcal
 ```
 
-**Vorgesehen, noch nicht umgesetzt:** Vom Gerät **gemessener Energieverbrauch** (`active_energy`, §7) soll angenommen werden — er ist eine Belastungsgröße, keine Selbstauskunft. Selbst gemeldete Aufnahme (gegessene Kalorien) und Gewicht bleiben ausgeschlossen. Dafür wird die Negativliste überarbeitet und die bisher fehlende Prüfung der **Einheit** nachgezogen (`kcal` als `unit` einer anderen Metrik wird heute nicht abgewiesen). Bis diese Änderung veröffentlicht ist, sollen Quellen **keine Energiewerte senden** (§8).
+Die Liste gilt für das Feld `metric`. Ein Eintrag mit `metric: "kcal"` ist also `metric_excluded` — nicht `invalid_unit` und nicht `invalid_metric`; `invalid_metric` bleibt der Formfehler aus §4.2. `active_energy` steht nicht auf der Liste.
+
+### 4.7 Einheitenregel für Energie
+
+Eine Energieeinheit steht **genau dann**, wenn die Metrik `active_energy` ist. Beide Richtungen sind Teil des Vertrags; verletzt ein Eintrag eine davon, antwortet der Dienst mit 400 `invalid_unit`:
+
+| Metrik | `unit` | Ergebnis |
+|---|---|---|
+| `active_energy` | genau `kcal` oder genau `kJ` | angenommen |
+| `active_energy` | fehlt, leer oder anders geschrieben (`KCAL`, `kj`, `Kcal`, `cal`, `J` …) | `invalid_unit` |
+| jede andere Metrik | fehlt, leer oder keine Energieeinheit | angenommen |
+| jede andere Metrik | `kcal` oder `kJ` in **beliebiger** Groß-/Kleinschreibung (`kcal`, `KCAL`, `kJ`, `kj` …) | `invalid_unit` |
+
+Für `active_energy` zählt die exakte UCUM-Schreibweise, weil UCUM Groß- und Kleinschreibung unterscheidet (`kJ` ist Kilojoule, `kj` ist kein UCUM-Code). Bei allen anderen Metriken wird dagegen jede Schreibweise abgewiesen, damit die Schutzregel nicht über `KCAL` umgangen wird. Verglichen wird die exakte Zeichenkette — ohne Beschneiden von Leerzeichen und ohne Zerlegung zusammengesetzter Einheiten. `"kcal "` oder `"kcal/d"` an einer anderen Metrik gelten deshalb nicht als Energieeinheit im Sinne dieser Regel und gehen durch. Das ist bewusst so: Den Normalfall, eine Energieaufnahme unter eigenem Namen, fängt die Negativliste der Metriknamen (§4.6).
+
+Der Dienst rechnet nicht um: `kcal` und `kJ` werden roh nebeneinander gespeichert und so ausgeliefert. Eine Quelle, die beide liefern könnte, soll sich für eine Einheit entscheiden.
+
+**Prüfreihenfolge innerhalb eines Eintrags:** Die Metrik wird vor der Einheit geprüft — erst ihre Form (`invalid_metric`), dann die Negativliste (`metric_excluded`), dann `value` (`invalid_value`), dann Länge und Energieregel der Einheit (`invalid_unit`). Trägt ein Eintrag mehrere Fehler, nennt die Antwort den ersten in dieser Reihenfolge.
 
 ---
 
@@ -206,7 +224,7 @@ Für 401, 413, 429 und das 400 bei ungültigem JSON ist nur `error` festgelegt; 
 | Status | Wann | Körper | Verhalten der Quelle |
 |---|---|---|---|
 | **400** | Körper ist kein gültiges JSON | `{ "error": "Ungültiges JSON." }` | Fehler im Werkzeug, nicht wiederholen |
-| **400** | Feldfehler (§4.2), Negativliste, `source_mismatch` | `{ "error", "code" }`, Meldung mit „Eintrag N: …" | Block korrigieren, ganz erneut senden |
+| **400** | Feldfehler (§4.2), Negativliste (§4.6), Einheitenregel (§4.7), `source_mismatch` | `{ "error", "code" }`, Meldung mit „Eintrag N: …" | Block korrigieren, ganz erneut senden |
 | **401** | Token fehlt, ist unförmig, unbekannt, widerrufen, oder das Konto ist kein Schütze mehr | `{ "error": "Import-Token ungültig." }` | Nicht wiederholen; der Schütze muss die Quelle neu verbinden. Die Meldung ist für **alle** Ursachen gleich, damit ein Angreifer nicht erfährt, ob ein Token existiert |
 | **413** | Anfragekörper zu groß | `{ "error": "Anfrage zu groß." }` | In kleinere Blöcke teilen (§5.4) |
 | **429** | Drossel (§5.3) | `{ "error": "Zu viele Importe. Bitte kurz warten." }` | Warten, dann wiederholen; `RateLimit-Reset` beachten |
@@ -237,7 +255,7 @@ Der Dienst prüft in dieser Reihenfolge; die erste zutreffende Antwort gewinnt:
 2. **400** „Ungültiges JSON."
 3. **429** Drossel
 4. **401** Token
-5. **400** Feldfehler, Negativliste, `source_mismatch`
+5. **400** Feldfehler, Negativliste, Einheitenregel, `source_mismatch`
 6. **200** Schreiben in einer Transaktion
 
 Diese Reihenfolge ist Teil des Vertrags, weil eine Quelle sonst aus einem 413 nicht schließen kann, ob ihr Token überhaupt geprüft wurde.
@@ -264,7 +282,7 @@ Umgekehrt kann aus einem gespeicherten BHS-010-Eintrag ein Open-mHealth-Datenpun
 
 ## 7. Empfohlenes Metrik-Vokabular
 
-Der Dienst **prüft das Vokabular nicht** — jede Metrik, die der Form aus §4.2 genügt und nicht auf der Negativliste steht, wird angenommen. Die Tabelle ist eine Empfehlung, damit Quellen und Auswertungen dieselben Namen verwenden. Einheiten sind **UCUM-Codes** (Unified Code for Units of Measure, Version 2.2).
+Der Dienst **prüft das Vokabular nicht** — jede Metrik, die der Form aus §4.2 genügt und nicht auf der Negativliste steht, wird angenommen. Die einzige inhaltliche Prüfung ist die Einheitenregel für Energie (§4.7). Die Tabelle ist eine Empfehlung, damit Quellen und Auswertungen dieselben Namen verwenden. Einheiten sind **UCUM-Codes** (Unified Code for Units of Measure, Version 2.2).
 
 | `metric` | Bedeutung | `unit` (UCUM) | Zeitform | Open mHealth |
 |---|---|---|---|---|
@@ -274,31 +292,38 @@ Der Dienst **prüft das Vokabular nicht** — jede Metrik, die der Form aus §4.
 | `sleep_minutes` | Schlafdauer | `min` | Zeitraum (Nacht) | `sleep-duration` |
 | `steps` | Schritte | `1` | Zeitraum (Tag) | `step-count` |
 | `training_load_external` | Belastungswert des Anbieters, ohne Umrechnung | `1` | Zeitraum | — |
+| `active_energy` | vom Gerät gemessener Energieverbrauch durch Aktivität — nie Aufnahme | `kcal` oder `kJ` — **geprüft**, §4.7 | Zeitraum | `calories-burned` |
 
-Vorgesehen, **noch nicht umgesetzt** (§4.6, §8):
-
-| `metric` | Bedeutung | `unit` (UCUM) | Zeitform | Open mHealth |
-|---|---|---|---|---|
-| `active_energy` | vom Gerät gemessener Energieverbrauch durch Aktivität | `kcal` | Zeitraum | `calories-burned` |
-
-Hinweise zu den UCUM-Codes: `/min` ist „pro Minute" (Schläge sind dimensionslos), `1` ist die Einheit für reine Zählwerte und dimensionslose Indizes, `ms` und `min` sind Millisekunde und Minute, `kcal` die Kilokalorie. UCUM unterscheidet Groß- und Kleinschreibung.
+Hinweise zu den UCUM-Codes: `/min` ist „pro Minute" (Schläge sind dimensionslos), `1` ist die Einheit für reine Zählwerte und dimensionslose Indizes, `ms` und `min` sind Millisekunde und Minute, `kcal` die Kilokalorie und `kJ` das Kilojoule. UCUM unterscheidet Groß- und Kleinschreibung.
 
 Was **nicht** gesendet werden soll: Werte, die der Schütze selbst eintippt (Befinden, Schmerz, Ernährung) — dafür hat ein Trainingsdienst eigene Eingaben mit eigenen Regeln. BHS-010 ist für **gemessene** Werte gedacht.
 
 ---
 
-## 8. Offene Punkte
+## 8. Lesepfade und offene Punkte
+
+### 8.1 Wer die Werte liest
+
+Der Lesepfad ist nicht Teil des Vertrags zwischen Quelle und Dienst (§1.3). Eine Quelle und ein Schütze sollen aber wissen, wer die Werte sieht. In der BOWHUMAN-Implementierung gilt:
+
+- **Der Schütze** liest alle seine Werte roh — Zeitpunkt, Zeitraum, Metrik, Zahl, Einheit, Quelle. `payload` wird nie ausgeliefert, auch nicht an ihn.
+- **Die Trainer der Gruppen des Schützen** lesen dieselben Rohwerte **je Schütze**, dazu die Quellen des Schützen (`sources`: Schlüssel, Bezeichnung, aktiv oder widerrufen — ohne Token und ohne Hash). Es gibt keine Bewertung, keine Ampel, keine Verdichtung und keine Einrechnung in Belastung, Regeln oder Punkte; im Gruppenvergleich tauchen Importwerte nicht auf. Begründung: sportmedizinische Auswertung in einer Anfangsphase, mit schriftlicher Einwilligung der Gruppe.
+- **Freigabe durch den Schützen.** Für einzelne Messgrößen entscheidet der Schütze, ob die Trainer sie sehen (`shared_with_trainers`, Standard **aus**). Heute betrifft das nur `active_energy`; alle anderen Messgrößen sehen die Trainer ohne Schalter. Die Freigabe gilt für **alle Trainer-Konten** der Gruppen des Schützen — eine eigene Rolle „Sportmedizin" gibt es nicht, weil Trainer und Sportmediziner dieselben Personen sein können.
+- **`withheld`.** Hält der Schütze eine Messgröße zurück, fehlen ihre Werte in der Antwort an den Trainer. Die Antwort nennt dann in `withheld` den **Namen** der Messgröße — nur, wenn es im abgefragten Zeitraum tatsächlich Werte gäbe, und nie Wert, Zeitpunkt oder Anzahl. Sonst ist `withheld` leer.
+
+Für eine Quelle ändert das am Senden nichts. Liefert sie `active_energy`, kommt der Wert an und ist für den Schützen sichtbar; ob die Trainer ihn sehen, entscheidet allein der Schütze.
+
+### 8.2 Offene Punkte
 
 Diese Punkte sind der Grund, warum BHS-010 DRAFT ist. Sie werden vor STABLE entschieden und im Changelog nachgetragen.
 
 | Punkt | Stand |
 |---|---|
-| **Energieverbrauch** | Entschieden, nicht umgesetzt: `active_energy` soll angenommen werden, Aufnahme und Gewicht bleiben draußen (§4.6). Braucht eine Überarbeitung der Negativliste und eine Einheitenprüfung. Bis dahin: keine Energiewerte senden. |
-| **Trainer-Lesepfad** | Entschieden, nicht umgesetzt: Trainer einer Gruppe sollen Importwerte ihrer Schützen als Rohdaten lesen dürfen (Begründung: sportmedizinische Auswertung in einer Anfangsphase, schriftliche Einwilligung der Gruppe). Der Lesepfad ist nicht Teil dieses Vertrags (§1.3), aber eine Quelle und ein Schütze sollen wissen, wer die Werte sieht. Für `active_energy` ist zusätzlich eine Freigabe durch den Schützen vorgesehen. |
 | **Erste echte Quelle** | Noch keine. STABLE erst, wenn eine Uhr, ein Ring, eine App oder ein Export-Werkzeug produktiv über BHS-010 schreibt und die Erfahrung daraus eingearbeitet ist. |
-| **Einheiten-Negativliste** | `kcal` als `unit` wird heute nicht geprüft, nur als `metric`. Wird mit dem Energie-Punkt zusammen gelöst. |
 | **JSON Schema** | Es gibt noch keines. Das Validierungs-Werkzeug dieses Repositorys ordnet Beispiele über `__type` zu; ein Anfragekörper hat keinen `__type`. Ob der Körper einen Marker bekommt oder das Schema eigenständig geführt wird, ist offen. |
 | **Verdichtung und Einfluss** | Ob Ruhepuls oder HRV in Belastungsampel oder Regeln eingehen, ist Sache des Dienstes — derzeit bewusst nicht, weil die Daten noch nicht verlässlich genug sind. Berührt den Vertrag nicht, wohl aber die Erwartung der Quelle, was aus ihren Werten wird. |
+
+Entschieden und umgesetzt seit 0.9.1: Energieverbrauch (§4.6, §4.7, §7) und Lesepfad (§8.1).
 
 ---
 
@@ -308,6 +333,7 @@ Diese Punkte sind der Grund, warum BHS-010 DRAFT ist. Sie werden vor STABLE ents
 - Der Dienst speichert vom Token nur einen Hash. Klartext gibt es einmal, beim Anlegen.
 - `payload` wird gespeichert, aber **nicht ausgewertet** und **nicht wieder ausgeliefert**. Es ist ein Beleg für Rückfragen, kein Datenkanal.
 - Die 401-Meldung ist für alle Ursachen gleich (§5.2).
+- Wer importierte Werte liest, steht in §8.1; der Schütze hält einzelne Messgrößen gegenüber seinen Trainern zurück, und der Dienst verrät über zurückgehaltene Werte nur den Namen der Messgröße.
 - Ein Token schreibt nur Werte **eines** Schützen aus **einer** Quelle. Ein kompromittierter Token kann falsche Werte für diese eine Person einschleusen, aber nichts lesen und niemanden sonst betreffen. Der Schütze beendet das durch Widerruf.
 
 ---
@@ -342,14 +368,14 @@ Tageszusammenfassung mit Zeitraum und Rohdaten:
 
 ## 11. Rückwärtskompatibilität
 
-Neues Dokument, keine Vorgängerversion. Da der Anfragekörper keinen `__type`/`__version`-Marker trägt, ist die Version dieses Dokuments die Version des Vertrags. Breaking Changes (neue Pflichtfelder, geänderte Fehlercodes, geänderte Prüfreihenfolge) werden nach dem Verfahren in `CONTRIBUTING.md` angekündigt. Das **Hinzufügen** von Metriken zum Vokabular (§7) und das **Verkürzen** der Negativliste (§4.6) sind keine Breaking Changes.
+Neues Dokument, keine Vorgängerversion. Da der Anfragekörper keinen `__type`/`__version`-Marker trägt, ist die Version dieses Dokuments die Version des Vertrags. Breaking Changes (neue Pflichtfelder, geänderte Fehlercodes, geänderte Prüfreihenfolge) werden nach dem Verfahren in `CONTRIBUTING.md` angekündigt. Das **Hinzufügen** von Metriken zum Vokabular (§7) und das **Verkürzen** der Negativliste (§4.6) sind keine Breaking Changes. Das **Verlängern** der Negativliste und jeder **neue Abweisungsgrund** (wie die Einheitenregel in §4.7) sind Breaking Changes — im DRAFT-Status zulässig, aber nur mit Changelog-Eintrag (so geschehen in 0.9.1).
 
 ## 12. Referenz-Implementierungen
 
 | System | Rolle | Stand |
 |---|---|---|
-| Tuck (BOWHUMAN-Trainings-App, Backend Sherwood) | Dienst — bietet `POST /import`, Token-Verwaltung und Lesepfad für den Schützen | produktiv seit 2026-10-21 |
-| — | Quelle | **keine** — der erste Implementierer einer Quelle ist Voraussetzung für STABLE (§8) |
+| Tuck (BOWHUMAN-Trainings-App, Backend Sherwood) | Dienst — bietet `POST /import`, Token-Verwaltung, Lesepfad für Schütze und Trainer mit Freigabe (§8.1) | produktiv seit 2026-10-21; Einheitenregel (§4.7) und Freigabe (§8.1) seit 2026-10-21 (0.9.1) |
+| — | Quelle | **keine** — der erste Implementierer einer Quelle ist Voraussetzung für STABLE (§8.2) |
 
 ---
 
@@ -358,3 +384,4 @@ Neues Dokument, keine Vorgängerversion. Da der Anfragekörper keinen `__type`/`
 | Version | Datum | Änderungen |
 |---|---|---|
 | 0.9 | 2026-10-21 | Erster Entwurf aus der Import-Schnittstelle der BOWHUMAN-Trainings-App. Offen: Energieverbrauch, Trainer-Lesepfad, Einheiten-Negativliste, JSON Schema, erste echte Quelle. |
+| 0.9.1 | 2026-10-21 | Energieverbrauch gilt: `active_energy` wird angenommen (§4.6, §7). Negativliste von 6 auf 11 Namen erweitert (neu `body_mass`, `bmi`, `energy_intake`, `calories_in`, `intake_kcal`) — Metriken dieser Namen, die 0.9 noch annahm, werden abgewiesen. Neu §4.7 Einheitenregel in beide Richtungen mit Fehlercode `invalid_unit` (genau `kcal`/`kJ` bei `active_energy`; keine Energieeinheit in beliebiger Schreibweise bei anderen Metriken; exakte Zeichenkette ohne Trim) und Prüfreihenfolge Metrik vor Einheit; `metric: "kcal"` bleibt `metric_excluded`. §8 umgebaut: 8.1 Lesepfad (Schütze roh; Trainer roh je Schütze mit `sources`; Freigabe `shared_with_trainers`, Standard aus, für alle Trainer-Konten; `withheld` nur Name, nur bei Werten im Zeitraum), 8.2 verbleibende offene Punkte (erste Quelle, JSON Schema, Verdichtung). §1.3, §4.2, §5.2, §5.5, §9, §11, §12 angeglichen. Status bleibt DRAFT. |
