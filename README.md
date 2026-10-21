@@ -24,6 +24,8 @@ bowhuman bleibt Maintainer dieser Standards und Referenz-Implementierung. Die Sp
 | BHS-006 | Tournament Metadata | DRAFT | [specs/BHS-006-tournament-metadata.md](specs/BHS-006-tournament-metadata.md) |
 | BHS-007 | Archer Metadata | DRAFT | [specs/BHS-007-archer-metadata.md](specs/BHS-007-archer-metadata.md) |
 | BHS-008 | Class System Metadata | DRAFT | [specs/BHS-008-class-system-metadata.md](specs/BHS-008-class-system-metadata.md) |
+| BHS-009 | Scene Feedback | DRAFT | [specs/BHS-009-scene-feedback.md](specs/BHS-009-scene-feedback.md) |
+| BHS-010 | Measurement Import API | DRAFT | [specs/BHS-010-measurement-import-api.md](specs/BHS-010-measurement-import-api.md) |
 
 **BHS** = Bowhuman Standard
 
@@ -159,6 +161,38 @@ Metadatenformat für **Wertungssysteme**: wer wird mit wem gewertet und von welc
 ```
 
 → [Vollständige Spec](specs/BHS-008-class-system-metadata.md) · [JSON Schema](schemas/class-system-v1.schema.json) · [Beispiele](examples/class-systems/)
+
+### BHS-009 — Scene Feedback *(Draft)*
+
+Format für **Rückmeldungen von Schützen zu einer einzelnen Station** eines Parcours: Bewertung (gut/schlecht), optional Text, Foto oder Sprachmemo-Transkript, Kontext (Parcours, Ziel, Zeitpunkt, Wetter nach BHS-002 §7) und Bearbeitungsstatus beim Betreiber. Laufzeitbezogen, deshalb kein Teil von BHS-001; das Feedback-Objekt trägt keine Kontaktdaten.
+
+```json
+{
+  "__type":    "bhs-scene-feedback",
+  "__version": 1,
+  "rating":    "schlecht",
+  "parcours":  { "name": "Schaumberg D.K.", "gps": { "lat": 49.491, "lon": 7.034 } },
+  "target":    { "number": 7, "animal": "Wildschwein" },
+  "text":      "Der Ständer wackelt stark."
+}
+```
+
+→ [Vollständige Spec](specs/BHS-009-scene-feedback.md) · [JSON Schema](schemas/scene-feedback-v1.schema.json) · [Beispiele](examples/scene-feedback/)
+
+### BHS-010 — Measurement Import API *(Draft)*
+
+Kein Dateiformat, sondern ein **HTTP-Vertrag**: Wie eine Quelle (Sportuhr, Ring, Gesundheits-App, Export-Werkzeug) Messwerte eines Schützen — Ruhepuls, HRV, Schlaf, Schritte, Belastungswerte — an einen Trainingsdienst sendet. Token `ti_` + 64 Hex mit der Quelle im Token, `POST /import` mit bis zu 200 Einträgen, Alles-oder-nichts, Upsert über `external_id`, Einheiten als UCUM-Codes, Felder verlustfrei auf Open mHealth abbildbar. Entwurf **vor dem ersten externen Implementierer**; STABLE erst nach der ersten echten Quelle.
+
+```json
+{
+  "items": [
+    { "external_id": "2026-10-21-rhr", "measured_at": "2026-10-21T06:30:00+02:00",
+      "metric": "resting_hr", "value": 48, "unit": "/min" }
+  ]
+}
+```
+
+→ [Vollständige Spec](specs/BHS-010-measurement-import-api.md) · noch kein JSON Schema (Anfragekörper ohne `__type`, siehe Spec §8)
 
 ---
 

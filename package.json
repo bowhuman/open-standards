@@ -2,7 +2,7 @@
   "name": "bowhuman-open-standards",
   "private": true,
   "version": "1.0.0",
-  "description": "Validierungs-Tooling für die Bowhuman Open Standards (BHS-001 bis BHS-008)",
+  "description": "Validierungs-Tooling für die Bowhuman Open Standards (BHS-001 bis BHS-010)",
   "scripts": {
     "validate": "node tools/validate.js"
   },
