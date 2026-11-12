@@ -100,7 +100,7 @@ interface ArcherClass {
 }
 ```
 
-**Warum drei Schlüssel statt nur `discipline`:** Ein Realitätscheck gegen die produktive Sherwood-Funktion `get_age_class_label(uid, assoc)` (`Websites/sherwood.bowhuman.eu/db_age_classes_3d.sql`) zeigt, dass eine Wettkampfklasse in der Praxis **nicht** allein von Disziplin und Verband abhängt:
+**Warum drei Schlüssel statt nur `discipline`:** Ein Realitätscheck gegen die produktive Sherwood-Funktion `get_age_class_label(uid, assoc)` (`platform/sherwood/db_age_classes_3d.sql`) zeigt, dass eine Wettkampfklasse in der Praxis **nicht** allein von Disziplin und Verband abhängt:
 
 - **DSB** vergibt pro Bogenklasse eigene Klassennummern-Bereiche (Recurve/Langbogen/Instinktiv/Primitiv: 10–41, Compound: 110–140, Blankbogen: 210–241) — derselbe Schütze hat je nach Bogenklasse unterschiedliche DSB-Klassen.
 - **DBSV** dagegen vergibt dieselbe Altersklasse unabhängig von der Bogenklasse (U18/Herren/Ü50 etc.) — die Bogenklasse beeinflusst dort nur die Pflockfarbe (`association_peg_rules`), nicht die Wettkampfklasse.

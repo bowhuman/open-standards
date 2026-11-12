@@ -22,7 +22,7 @@ Dieses Dokument definiert drei zusammenhängende JSON-Profile für Bogensport-Au
 - **`bhs-arrow`** — Ein Pfeilmodell (Material, Spine, Gewichte).
 - **`bhs-equipment-set`** — Ein benanntes Bogen+Pfeil-Set, optional als aktives Set markiert.
 
-Die Profile bilden 1:1 die drei aktiven Postgres-Tabellen in Sherwood ab (`equipment_bows`, `equipment_arrows`, `equipment_sets` — siehe `00_Kontext/postgres.md`). Wie bei den übrigen BHS-Dokumenten gilt: Diese Spec beschreibt gelebte Praxis, kein Papierformat — jedes Feld hat eine Entsprechung im UI (`equipment.html`, Archers Nest).
+Die Profile bilden 1:1 die drei aktiven Postgres-Tabellen in Sherwood ab (`equipment_bows`, `equipment_arrows`, `equipment_sets` — siehe `knowledge/vault/02 Datenbank/postgres.md`). Wie bei den übrigen BHS-Dokumenten gilt: Diese Spec beschreibt gelebte Praxis, kein Papierformat — jedes Feld hat eine Entsprechung im UI (`equipment.html`, Archers Nest).
 
 **Zentraler Befund dieser Spec (§5):** Es gibt im bowhuman-Ökosystem bereits **drei unterschiedliche Vokabulare** für denselben Sachverhalt „Bogentyp" — mit unterschiedlicher Sprache, unterschiedlicher Groß-/Kleinschreibung und teils unterschiedlicher Kategorisierung. BHS-005 löst das nicht auf, sondern macht es sichtbar (siehe §5, gleiches Vorgehen wie BHS-004 §8 bei der Robin-Scoring-Diskrepanz).
 

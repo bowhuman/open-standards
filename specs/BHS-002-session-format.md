@@ -172,7 +172,7 @@ interface ShotGpsPoint {
 }
 ```
 
-_Beleg: `rg -c "^\s+flock_gps:" Websites/sherwood.bowhuman.eu/schemas/robin-session.js` → 1 · `rg -c "^\s+target_gps:" Websites/sherwood.bowhuman.eu/schemas/robin-session.js` → 1 · `rg -c "^\s+measured_distance_m:" Websites/sherwood.bowhuman.eu/schemas/robin-session.js` → 1 · geprüft 2026-09-24_
+_Beleg: `rg -c "^\s+flock_gps:" platform/sherwood/schemas/robin-session.js` → 1 · `rg -c "^\s+target_gps:" platform/sherwood/schemas/robin-session.js` → 1 · `rg -c "^\s+measured_distance_m:" platform/sherwood/schemas/robin-session.js` → 1 · geprüft 2026-11-12_
 
 ### 5.1 Scoring-Zonen
 
