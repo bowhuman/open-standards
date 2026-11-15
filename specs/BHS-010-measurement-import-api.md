@@ -5,13 +5,13 @@
 | Nummer | BHS-010 |
 | Titel | Measurement Import API (Import von Messwerten) |
 | Status | **DRAFT** |
-| Version | 0.9.1 |
-| Datum | 2026-10-21 |
-| Autor | bowhuman (Tuck-Team) |
+| Version | 0.9.2 |
+| Datum | 2026-11-15 |
+| Autor | bowhuman |
 | Abhängig von | — (eigenständig; referenziert keinen anderen BHS-Typ) |
 | Verwandt | BHS-002 (Session Export — Schießdaten einer Runde; BHS-010 beschreibt Körper- und Belastungsmesswerte, nicht Schüsse) |
 
-> **DRAFT**: Erstvorschlag zur Diskussion, entstanden aus der Import-Schnittstelle der BOWHUMAN-Trainings-App (Tuck, Oktober 2026). Der Dienst ist produktiv, **eine externe Quelle hat bisher noch niemand angebunden**. Der Standard wird erst dann als STABLE verabschiedet, wenn mindestens eine echte Quelle (Uhr, Ring, App oder Export-Werkzeug) über diese Schnittstelle schreibt und die in §8.2 genannten offenen Punkte entschieden sind. Feldnamen, Grenzwerte und Fehlercodes können sich bis dahin ändern.
+> **DRAFT**: Erstvorschlag zur Diskussion, entstanden aus der Import-Schnittstelle der BOWHUMAN-Trainings-App (Marian Trainingsplan, Oktober 2026). Der Dienst ist produktiv, **eine externe Quelle hat bisher noch niemand angebunden**. Der Standard wird erst dann als STABLE verabschiedet, wenn mindestens eine echte Quelle (Uhr, Ring, App oder Export-Werkzeug) über diese Schnittstelle schreibt und die in §8.2 genannten offenen Punkte entschieden sind. Feldnamen, Grenzwerte und Fehlercodes können sich bis dahin ändern.
 
 ---
 
@@ -59,7 +59,7 @@ Die Felder sind so gewählt, dass eine verlustfreie Abbildung auf **Open mHealth
 | **Dienst** | Der Server, der `POST /import` anbietet und die Werte dem Schützen zuordnet. |
 | **Eintrag** (`item`) | Ein einzelner Messwert: Metrik, Zahl, Einheit, Zeitpunkt oder Zeitraum, optional Kennung und Rohdaten der Quelle. |
 
-Die Pfade in diesem Dokument sind **relativ zur Basis-URL des Dienstes**. Die BOWHUMAN-Implementierung liegt unter `https://sherwood.bowhuman.eu/api/tuck/`; `POST /import` heißt dort also `POST https://sherwood.bowhuman.eu/api/tuck/import`.
+Die Pfade in diesem Dokument sind **relativ zur Basis-URL des Dienstes**. Die BOWHUMAN-Implementierung liegt unter `https://sherwood.bowhuman.eu/api/trainingsplan/`; `POST /import` heißt dort also `POST https://sherwood.bowhuman.eu/api/trainingsplan/import`.
 
 ---
 
@@ -343,7 +343,7 @@ Entschieden und umgesetzt seit 0.9.1: Energieverbrauch (§4.6, §4.7, §7) und L
 Täglicher Ruhepuls aus einem Export-Skript, Token in der Umgebungsvariablen `IMPORT_TOKEN`:
 
 ```bash
-curl -s -X POST https://sherwood.bowhuman.eu/api/tuck/import \
+curl -s -X POST https://sherwood.bowhuman.eu/api/trainingsplan/import \
   -H "Authorization: Bearer $IMPORT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"items":[{"external_id":"2026-10-21-rhr","measured_at":"2026-10-21T06:30:00+02:00","metric":"resting_hr","value":48,"unit":"/min"}]}'
@@ -374,7 +374,7 @@ Neues Dokument, keine Vorgängerversion. Da der Anfragekörper keinen `__type`/`
 
 | System | Rolle | Stand |
 |---|---|---|
-| Tuck (BOWHUMAN-Trainings-App, Backend Sherwood) | Dienst — bietet `POST /import`, Token-Verwaltung, Lesepfad für Schütze und Trainer mit Freigabe (§8.1) | produktiv seit 2026-10-21; Einheitenregel (§4.7) und Freigabe (§8.1) seit 2026-10-21 (0.9.1) |
+| Marian Trainingsplan (BOWHUMAN-Trainings-App, Backend Sherwood) | Dienst — bietet `POST /import`, Token-Verwaltung, Lesepfad für Schütze und Trainer mit Freigabe (§8.1) | produktiv seit 2026-10-21; Einheitenregel (§4.7) und Freigabe (§8.1) seit 2026-10-21 (0.9.1); Basis-URL seit 2026-11-15 `/api/trainingsplan/` (0.9.2) |
 | — | Quelle | **keine** — der erste Implementierer einer Quelle ist Voraussetzung für STABLE (§8.2) |
 
 ---
@@ -385,3 +385,4 @@ Neues Dokument, keine Vorgängerversion. Da der Anfragekörper keinen `__type`/`
 |---|---|---|
 | 0.9 | 2026-10-21 | Erster Entwurf aus der Import-Schnittstelle der BOWHUMAN-Trainings-App. Offen: Energieverbrauch, Trainer-Lesepfad, Einheiten-Negativliste, JSON Schema, erste echte Quelle. |
 | 0.9.1 | 2026-10-21 | Energieverbrauch gilt: `active_energy` wird angenommen (§4.6, §7). Negativliste von 6 auf 11 Namen erweitert (neu `body_mass`, `bmi`, `energy_intake`, `calories_in`, `intake_kcal`) — Metriken dieser Namen, die 0.9 noch annahm, werden abgewiesen. Neu §4.7 Einheitenregel in beide Richtungen mit Fehlercode `invalid_unit` (genau `kcal`/`kJ` bei `active_energy`; keine Energieeinheit in beliebiger Schreibweise bei anderen Metriken; exakte Zeichenkette ohne Trim) und Prüfreihenfolge Metrik vor Einheit; `metric: "kcal"` bleibt `metric_excluded`. §8 umgebaut: 8.1 Lesepfad (Schütze roh; Trainer roh je Schütze mit `sources`; Freigabe `shared_with_trainers`, Standard aus, für alle Trainer-Konten; `withheld` nur Name, nur bei Werten im Zeitraum), 8.2 verbleibende offene Punkte (erste Quelle, JSON Schema, Verdichtung). §1.3, §4.2, §5.2, §5.5, §9, §11, §12 angeglichen. Status bleibt DRAFT. |
+| 0.9.2 | 2026-11-15 | Nur Implementierungsangaben, Vertrag unverändert: Die BOWHUMAN-Implementierung heißt jetzt „Marian Trainingsplan“, ihre Basis-URL ist `https://sherwood.bowhuman.eu/api/trainingsplan/` statt des bisherigen Pfads (§2, §10, §12). Der alte Pfad antwortet mit 404, eine Weiterleitung gibt es nicht; angebunden war keine Quelle. Token-Form `ti_…` (§3), Körper, Prüfregeln und Fehlercodes bleiben gleich. Status bleibt DRAFT. |
